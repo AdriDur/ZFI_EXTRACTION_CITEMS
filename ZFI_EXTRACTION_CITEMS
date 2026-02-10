@@ -1,0 +1,2248 @@
+*&---------------------------------------------------------------------*
+*& Include          ZMM_EXTRACTION_EXRATES_CLS
+*&---------------------------------------------------------------------*
+CLASS lcl_citems DEFINITION FINAL.
+
+  PUBLIC SECTION.
+
+    TYPES:BEGIN OF ty_items,
+*frt06022019  Cambio de tipo de datos para poder realizar select -------------->>
+            belnr(10)      TYPE  c,
+            gjahr(4)       TYPE  c,
+            bukrs(4)       TYPE  c,
+            buzei(3)       TYPE  c,
+            wrbtr(15)      TYPE  c,
+            lifnr(10)      TYPE  c,
+            saknr(10)      TYPE  c,
+            belnr_p(10)    TYPE  c,
+            gjahr_p(4)     TYPE  c,
+            bukrs_p(4)     TYPE  c,
+            buzei_p(3)     TYPE  c,
+            bldat_p(10)    TYPE  c,
+            wrbtr_p(15)    TYPE  c,
+            waers_p(3)     TYPE  c,
+            saknr_p(10)    TYPE  c,
+            belnr_ep(10)   TYPE  c,
+            gjahr_ep(4)    TYPE  c,
+            bukrs_ep(4)    TYPE  c,
+            buzei_ep(3)    TYPE  c,
+            bldat_ep(10)   TYPE  c,
+            wrbtr_ep(15)   TYPE  c,
+            waers_ep(3)    TYPE  c,
+            saknr_ep(10)   TYPE  c,
+            tiporef(1)     TYPE c,
+            referencia(13) TYPE c,
+            belnr_h(10)    TYPE  c,                                                                                                   "ADD SF RSG 30.07.2024
+            gjahr_h(4)     TYPE  c,                                                                                                   "ADD SF RSG 30.07.2024
+            bukrs_h(4)     TYPE  c,                                                                                                   "ADD SF RSG 30.07.2024
+*frt06022019  Cambio de tipo de datos para poder realizar select --------------<<
+          END OF ty_items,
+*ADD SF RSG 10.11.2022  Cambio para mostrar moneda correcta -------------->>
+          BEGIN OF ty_items2,
+            belnr(10)      TYPE  c,
+            gjahr(4)       TYPE  c,
+            bukrs(4)       TYPE  c,
+            buzei(3)       TYPE  c,
+            wrbtr(15)      TYPE  c,
+            waers          TYPE  waers,                                                                                               "ADD SF RSG 10.11.2022
+            lifnr(10)      TYPE  c,
+            saknr(10)      TYPE  c,
+            belnr_p(10)    TYPE  c,
+            gjahr_p(4)     TYPE  c,
+            bukrs_p(4)     TYPE  c,
+            buzei_p(3)     TYPE  c,
+            bldat_p(10)    TYPE  c,
+            wrbtr_p(15)    TYPE  c,
+            waers_p(3)     TYPE  c,
+            saknr_p(10)    TYPE  c,
+            belnr_ep(10)   TYPE  c,
+            gjahr_ep(4)    TYPE  c,
+            bukrs_ep(4)    TYPE  c,
+            buzei_ep(3)    TYPE  c,
+            bldat_ep(10)   TYPE  c,
+            wrbtr_ep(15)   TYPE  c,
+            waers_ep(3)    TYPE  c,
+            saknr_ep(10)   TYPE  c,
+            tiporef(1)     TYPE  c,
+            referencia(13) TYPE  c,
+            belnr_h(10)    TYPE  c,                                                                                                   "ADD SF RSG 30.07.2024
+            gjahr_h(4)     TYPE  c,                                                                                                   "ADD SF RSG 30.07.2024
+            bukrs_h(4)     TYPE  c,                                                                                                   "ADD SF RSG 30.07.2024
+          END OF ty_items2,
+*ADD SF RSG 10.11.2022  Cambio para mostrar moneda correcta --------------<<
+          BEGIN OF ty_key,
+            belnr(10) TYPE  c,
+            gjahr(4)  TYPE  c,
+            bukrs(4)  TYPE  c,
+          END OF ty_key,
+          BEGIN OF ty_update,
+            belnr_ep(10) TYPE  c,
+            gjahr_ep(4)  TYPE  c,
+            bukrs_ep(4)  TYPE  c,
+            buzei_ep(3)  TYPE  c,
+            bldat_ep(10) TYPE  c,
+            wrbtr_ep(15) TYPE  c,
+            waers_ep(3)  TYPE  c,
+            saknr_ep(10) TYPE  c,
+          END OF ty_update,
+          BEGIN OF ty_bsas,
+            bukrs TYPE bukrs,
+            hkont TYPE hkont,
+            augdt TYPE augdt,
+            augbl TYPE augbl,
+            zuonr TYPE dzuonr,
+            gjahr TYPE gjahr,
+            belnr TYPE belnr_d,
+            buzei TYPE buzei,
+            budat TYPE budat,
+            bldat TYPE bldat,
+            waers TYPE waers,
+            wrbtr TYPE wrbtr,
+          END OF ty_bsas,
+          BEGIN OF ty_bsak,
+            bukrs  TYPE bukrs,
+            lifnr  TYPE lifnr,
+            saknr  TYPE saknr, " GL Account VPA
+            umsks  TYPE umsks,
+            umskz  TYPE umskz,
+            augdt  TYPE augdt,
+            augbl  TYPE augbl,
+            zuonr  TYPE dzuonr,
+            gjahr  TYPE gjahr,
+            belnr  TYPE belnr_d,
+            buzei  TYPE buzei,
+            budat  TYPE budat,
+            waers  TYPE waers,
+            blart  TYPE blart,
+            wrbtr  TYPE wrbtr,
+            gjahra TYPE gjahr,
+          END OF ty_bsak,
+          BEGIN OF ty_bkpf,
+            bukrs     TYPE bukrs,
+            belnr     TYPE belnr_d,
+            gjahr     TYPE gjahr,
+            blart     TYPE blart,
+            waers     TYPE waers,
+            awtyp     TYPE awtyp,
+            awkey     TYPE awkey,
+**            stblg      TYPE stblg,
+**            stjah      TYPE stjah,
+**            xreversing TYPE co_stflg,
+            xreversed TYPE co_stokz,
+          END OF ty_bkpf,
+*******************        BEGIN OF INSERT SF RSG 19.08.2024       ************************
+          BEGIN OF ty_sap_log,
+            id_ini(1)    TYPE c,
+            type_doc(10) TYPE c,
+            ref_doc(18)  TYPE c,
+            ok_noc(3)    TYPE c,
+            action1(15)  TYPE c,
+            belnr(10)    TYPE c,
+            gjahr(4)     TYPE c,
+            bukrsid(4)   TYPE c,
+            mess(1)      TYPE c,
+            type(1)      TYPE c,
+            id(20)       TYPE c,
+            znumber(3)   TYPE c,
+*            message(1)   TYPE c,
+*            timestamp(1) TYPE c,
+*            enviado(1)   TYPE c,
+          END OF ty_sap_log,
+*******************        BEGIN OF INSERT SF RSG 19.08.2024       ************************
+          BEGIN OF ty_key_item,
+*frt06022019  Cambio de tipo de datos para poder realizar select -------------->>
+            belnr(10) TYPE c,
+            gjahr(4)  TYPE c,
+            bukrs(4)  TYPE c,
+*            tipo(2)   TYPE c,
+*frt06022019  Cambio de tipo de datos para poder realizar select --------------<<
+          END OF ty_key_item,
+          BEGIN OF ty_action,
+            action TYPE c LENGTH 1,
+          END OF ty_action.
+    TYPES BEGIN OF ty_out_items.
+    INCLUDE TYPE ty_action.
+*    INCLUDE TYPE ty_items.                                                                                                           "DELETE SF RSG 28.11.2022
+    INCLUDE TYPE ty_items2.                                                                                                           "ADD SF RSG 28.11.2022
+    TYPES END OF ty_out_items.
+*******************        BEGIN OF INSERT SF RSG 02.12.2022       ************************
+    TYPES: BEGIN OF ty_bukrs,
+             bukrs TYPE bukrs,
+             gjahr TYPE gjahr,
+           END OF ty_bukrs.
+*******************        END   OF INSERT SF RSG 02.12.2022       ************************
+
+
+    TYPES:tt_std_bsas        TYPE STANDARD TABLE OF ty_bsas WITH DEFAULT KEY,
+          tt_std_bsak        TYPE STANDARD TABLE OF ty_bsak,
+          tt_std_bsak_p      TYPE STANDARD TABLE OF ty_bsak,                                                                          "frt18022019 para los registros pagados
+          tt_sort_bkpf       TYPE SORTED TABLE OF ty_bkpf WITH UNIQUE KEY bukrs belnr gjahr,
+          tt_std_items       TYPE STANDARD TABLE OF ty_items,
+          tt_std_out_items_d TYPE STANDARD TABLE OF ty_out_items,
+          tt_std_out_items   TYPE STANDARD TABLE OF ty_out_items.
+
+
+    METHODS:main.
+
+    DATA:gt_bsas            TYPE tt_std_bsas,
+         gt_bsak            TYPE tt_std_bsak,
+         gt_bsak_p          TYPE tt_std_bsak_p, "para los registros pagados
+         gt_bkpf            TYPE tt_sort_bkpf,
+         gt_items_sql       TYPE tt_std_items,
+         gt_items_sql_bsik  TYPE tt_std_items,
+         gt_items_sql_bkpf  TYPE tt_std_items, "para poder borrar documentos reversados
+         gt_out_items_d     TYPE tt_std_out_items_d,
+         gt_out_items_dbsik TYPE tt_std_out_items_d,
+         gt_out_items_dbkpf TYPE tt_std_out_items_d,
+         gt_out_items       TYPE tt_std_out_items,
+         gt_bukrs           TYPE STANDARD TABLE OF ty_bukrs,
+         gt_sap_log         TYPE STANDARD TABLE OF ty_sap_log.
+
+    DATA: program TYPE sy-repid.
+
+    DATA: ti_bsik TYPE STANDARD TABLE OF bsik,
+          wa_bsik TYPE bsik.
+
+
+  PRIVATE SECTION.
+    METHODS:get_db_data,
+      get_db_data_bsik,
+      process_data_bsik,
+      process_data_bkpf,
+      process_data,
+      process_data_ep,
+      get_ext_db_data
+        RETURNING VALUE(ret) TYPE char01,                                                                                             "ADD SF RSG 01.03.2023
+      get_ext_db_data_bsik
+        RETURNING VALUE(ret) TYPE char01,                                                                                             "ADD SF RSG 01.03.2023
+      get_ext_db_data_bkpf
+        RETURNING VALUE(ret) TYPE char01,                                                                                             "ADD SF RSG 01.03.2023
+      get_ext_db_data_ep
+        RETURNING VALUE(ret) TYPE char01,                                                                                             "ADD SF RSG 01.03.2023
+      fill_out_table,
+      generate_output,
+      external_db,
+      external_db_bsik,
+      external_db_bkpf,
+      doc_pago_reversado,
+      insert_to_ext_db CHANGING co_con  TYPE REF TO zcl_external_db_util
+                                co_sql  TYPE REF TO cl_sql_connection
+                                ct_data TYPE tt_std_out_items,
+      delete_to_ext_db CHANGING co_con  TYPE REF TO zcl_external_db_util
+                                co_sql  TYPE REF TO cl_sql_connection
+                                ct_data TYPE tt_std_out_items,
+      update_to_ext_db CHANGING co_con  TYPE REF TO zcl_external_db_util
+                                co_sql  TYPE REF TO cl_sql_connection
+                                ct_data TYPE tt_std_out_items.
+
+
+
+ENDCLASS.
+
+CLASS lcl_citems IMPLEMENTATION.
+
+  METHOD main.
+
+    IF p_pagos = 'X'.
+
+      "Obtener BSIK
+
+      get_db_data_bsik( ).
+
+*      get_ext_db_data_bsik( ).                                                                                                       "DELETE SF RSG 01.03.2023
+      IF get_ext_db_data_bsik( ) EQ abap_true.                                                                                        "ADD SF RSG 01.03.2023
+
+        process_data_bsik( ).
+
+        IF lines(  gt_out_items_dbsik ) GT 0 .
+          external_db_bsik( ).
+        ENDIF.
+*Obtiene los datos de la tabla BSAK,BSAS
+        get_db_data( ).
+
+*Obtiene los registros de la tabla SQL
+*     get_ext_db_data( ).                                                                                                             "DELETE SF RSG 01.03.2023
+        IF get_ext_db_data( ) EQ abap_true.                                                                                           "ADD SF RSG 01.03.2023
+
+*Genera salida
+          process_data( ).
+
+
+
+          IF lines( gt_out_items ) GT 0 .
+
+            "eliminar documentos reversados
+            doc_pago_reversado( ).
+*Genera salida
+            generate_output( ).
+          ENDIF.
+        ENDIF.                                                                                                                        "ADD SF RSG 01.03.2023
+      ENDIF.                                                                                                                          "ADD SF RSG 01.03.2023
+
+    ENDIF.
+
+    IF p_pefec = 'X'.
+*      get_ext_db_data_bkpf( ).                                                                                                       "DELETE SF RSG 01.03.2023
+      IF get_ext_db_data_bkpf( ) EQ abap_true.                                                                                        "ADD SF RSG 01.03.2023
+
+        process_data_bkpf( ).
+
+        IF lines(  gt_out_items_dbkpf ) GT 0 .
+          external_db_bkpf( ).
+        ENDIF.
+      ENDIF.                                                                                                                          "ADD SF RSG 01.03.2023
+
+
+*      get_ext_db_data_ep( ).                                                                                                         "DELETE SF RSG 01.03.2023
+      IF get_ext_db_data_ep( ) EQ abap_true.                                                                                          "ADD SF RSG 01.03.2023
+
+        process_data_ep( ).
+      ENDIF.                                                                                                                          "ADD SF RSG 01.03.2023
+    ENDIF.
+
+
+
+  ENDMETHOD.
+
+  METHOD get_db_data_bsik.
+    DATA: lv_awkey  TYPE awkey,
+          lv_wrbtrp TYPE bsik-wrbtr.
+    REFRESH ti_bsik.
+
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.                                                                                               "ADD SF RSG 05.11.2024
+
+    SELECT * FROM bsik
+      INTO TABLE @ti_bsik
+      WHERE blart IN @s_blart
+        AND gjahr BETWEEN @s_augdt-low+0(4) AND @s_augdt-high+0(4).                                                                   "ADD SF RSG 23.08.2023
+*        AND zuonr LIKE 'P-%'.                                                                                                        "DELETED SF SVSS 10.02.2022
+    IF sy-subrc EQ 0.
+      SELECT * FROM bsik
+      INTO TABLE @DATA(lt_bsik)
+      FOR ALL ENTRIES IN @ti_bsik
+      WHERE bukrs EQ @ti_bsik-bukrs
+        AND lifnr EQ @ti_bsik-lifnr
+*       AND blart NE 'ZZ' deleted ELOM 22.07.2024
+        AND blart NE 'KG'
+        AND rebzg EQ @ti_bsik-belnr.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+      DATA: lv_end_time TYPE timestampl.
+      GET TIME STAMP FIELD lv_end_time.
+      DATA: lv_duration TYPE p DECIMALS 7.
+      lv_duration = ( lv_end_time - lv_start_time ) / 1.
+      WRITE: / lv_end_time, '|Tiempo consulta BSIK (segundos)|', lv_duration.
+      GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+      IF sy-subrc EQ 0.
+        SORT lt_bsik BY bukrs lifnr rebzg rebzj.
+        LOOP AT ti_bsik ASSIGNING FIELD-SYMBOL(<fs_bsik>).
+          READ TABLE lt_bsik WITH KEY bukrs = <fs_bsik>-bukrs
+                                      lifnr = <fs_bsik>-lifnr
+                                      rebzg = <fs_bsik>-belnr
+                                      rebzj = <fs_bsik>-gjahr TRANSPORTING NO FIELDS. "ADD SF RSG 12.03.2025
+          IF sy-subrc EQ 0.
+            CLEAR: lv_wrbtrp.
+***            lv_wrbtrp = <fs_bsik>-wrbtr.
+            LOOP AT lt_bsik ASSIGNING FIELD-SYMBOL(<ls_bsik>) FROM sy-tabix.
+              IF <ls_bsik>-bukrs = <fs_bsik>-bukrs
+                AND <ls_bsik>-lifnr = <fs_bsik>-lifnr
+                AND <ls_bsik>-rebzg = <fs_bsik>-belnr
+                AND <ls_bsik>-rebzj = <fs_bsik>-gjahr.
+*** W ETA CITEMS Amor Ant 001
+***                and <ls_bsik>-skfbt eq 0.
+*** W ETA CITEMS Amor Ant 001
+***                CASE <ls_bsik>-shkzg.
+***                  WHEN 'S'.
+***                    lv_wrbtrp = lv_wrbtrp - <ls_bsik>-wrbtr.
+***                  WHEN 'H'.
+*                lv_wrbtrp = lv_wrbtrp + <ls_bsik>-dmbtr.                       "DELETE SF RSG 12.03.2025
+                lv_wrbtrp = lv_wrbtrp + <ls_bsik>-wrbtr.                        "ADD SF RSG 12.03.2025
+                IF <fs_bsik>-waers NE <ls_bsik>-waers.                          "ADD SF RSG 12.03.2025
+                  lv_wrbtrp = lv_wrbtrp + 0.                                    "ADD SF RSG 12.03.2025
+                ENDIF.
+***                ENDCASE.
+              ELSE.
+                EXIT.
+              ENDIF.
+            ENDLOOP.
+            IF lv_wrbtrp = 0.
+*              lv_wrbtrp = <fs_bsik>-dmbtr.                       "DELETE SF RSG 12.03.2025
+              lv_wrbtrp = <fs_bsik>-wrbtr.                        "ADD SF RSG 12.03.2025
+            ENDIF.
+            IF lv_wrbtrp GT 0.
+              APPEND INITIAL LINE TO gt_out_items_dbsik ASSIGNING FIELD-SYMBOL(<lf_items_dbsik2>).
+              IF <fs_bsik>-blart EQ 'RE'.
+                CLEAR: lv_awkey .
+                SELECT SINGLE awkey INTO lv_awkey
+                    FROM bkpf
+                    WHERE bukrs = <fs_bsik>-bukrs AND
+                    belnr = <fs_bsik>-belnr AND
+                    gjahr = <fs_bsik>-gjahr AND
+                    blart = 'RE' AND
+                    awtyp = 'RMRP'.
+                IF sy-subrc EQ 0.
+                  <lf_items_dbsik2>-belnr = lv_awkey(10).
+                  <lf_items_dbsik2>-gjahr = lv_awkey+10(4).
+                ENDIF.
+              ELSE.
+                <lf_items_dbsik2>-belnr = <fs_bsik>-belnr.
+                <lf_items_dbsik2>-gjahr = <fs_bsik>-gjahr.
+              ENDIF.
+              <lf_items_dbsik2>-bukrs = <fs_bsik>-bukrs.
+              <lf_items_dbsik2>-buzei = <fs_bsik>-buzei.
+              <lf_items_dbsik2>-wrbtr = <fs_bsik>-dmbtr.
+              <lf_items_dbsik2>-lifnr = <fs_bsik>-lifnr.
+              <lf_items_dbsik2>-saknr = <fs_bsik>-saknr.
+
+**********************          BEGIN OF INSERT SF RSG 12.03.2025         **********************************
+              READ TABLE lt_bsik WITH KEY bukrs = <fs_bsik>-bukrs
+                                          lifnr = <fs_bsik>-lifnr
+                                          rebzg = <fs_bsik>-belnr
+                                          rebzj = <fs_bsik>-gjahr TRANSPORTING NO FIELDS.
+              IF sy-subrc EQ 0.
+                LOOP AT lt_bsik ASSIGNING <ls_bsik> FROM sy-tabix.
+                  IF <ls_bsik>-bukrs = <fs_bsik>-bukrs
+                    AND <ls_bsik>-lifnr = <fs_bsik>-lifnr
+                    AND <ls_bsik>-rebzg = <fs_bsik>-belnr
+                    AND <ls_bsik>-rebzj = <fs_bsik>-gjahr.
+                    IF NOT ( <ls_bsik>-blart EQ 'KZ' OR <ls_bsik>-blart EQ 'ZP' ).
+*                      lv_wrbtrp = lv_wrbtrp - <ls_bsik>-dmbtr.                       "DELETE SF RSG 12.03.2025
+                      lv_wrbtrp = lv_wrbtrp + <ls_bsik>-wrbtr.                        "ADD SF RSG 12.03.2025
+                      IF <fs_bsik>-waers NE <ls_bsik>-waers.                          "ADD SF RSG 12.03.2025
+                        lv_wrbtrp = lv_wrbtrp + 0.                                    "ADD SF RSG 12.03.2025
+                      ENDIF.
+                    ENDIF.
+                  ELSE.
+                    EXIT.
+                  ENDIF.
+                ENDLOOP.
+              ENDIF.
+**********************          END   OF INSERT SF RSG 12.03.2025         **********************************
+              <lf_items_dbsik2>-wrbtr_p = lv_wrbtrp.
+              <lf_items_dbsik2>-action  =  zcl_external_db_util=>gc_insert.
+              <lf_items_dbsik2>-waers =  <fs_bsik>-waers.
+            ENDIF.
+          ENDIF.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+
+    LOOP AT ti_bsik ASSIGNING FIELD-SYMBOL(<lf_bsik>) WHERE blart = 'RE'.
+      CLEAR: lv_awkey .
+      SELECT SINGLE awkey INTO lv_awkey
+          FROM bkpf
+          WHERE bukrs = <lf_bsik>-bukrs AND
+          belnr = <lf_bsik>-belnr AND
+          gjahr = <lf_bsik>-gjahr AND
+          blart = 'RE' AND
+          awtyp = 'RMRP'.
+
+      IF lv_awkey IS NOT INITIAL.
+        <lf_bsik>-belnr = lv_awkey(10).
+        <lf_bsik>-gjahr = lv_awkey+10(4).
+      ENDIF.
+    ENDLOOP.
+
+    SORT ti_bsik BY bukrs belnr gjahr.
+    DELETE ADJACENT DUPLICATES FROM ti_bsik  COMPARING bukrs lifnr umsks umskz augdt augbl zuonr gjahr belnr buzei.
+
+*******************        BEGIN OF INSERT SF RSG 02.12.2022       ************************
+    DATA: ls_bukrs TYPE ty_bukrs.
+    LOOP AT ti_bsik ASSIGNING <fs_bsik>.
+      ls_bukrs-bukrs = <fs_bsik>-bukrs.
+      ls_bukrs-gjahr = <fs_bsik>-gjahr.
+      APPEND ls_bukrs TO gt_bukrs.
+    ENDLOOP.
+    SORT gt_bukrs BY bukrs gjahr.
+    DELETE ADJACENT DUPLICATES FROM gt_bukrs COMPARING bukrs gjahr.
+*******************        END   OF INSERT SF RSG 02.12.2022       ************************
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    GET TIME STAMP FIELD lv_end_time.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo lógica BSIK (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+  ENDMETHOD.
+
+
+  METHOD get_db_data.
+
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.
+
+    REFRESH gt_bsak.
+
+    SELECT FROM bsak
+      FIELDS bukrs ,
+            lifnr ,
+            saknr ,
+            umsks ,
+            umskz ,
+            augdt ,
+            augbl ,
+            zuonr ,
+            gjahr ,
+            belnr ,
+            buzei ,
+            budat ,
+            waers ,
+            blart ,
+            wrbtr
+      WHERE augdt IN @s_augdt
+        AND blart IN @s_blart
+*        AND zuonr LIKE 'P-%'                                                                                                         "DELETED SF SVSS 10.02.2022
+      INTO TABLE @gt_bsak.
+
+    SORT gt_bsak BY bukrs augbl augdt.
+    DELETE ADJACENT DUPLICATES FROM gt_bsak  COMPARING bukrs lifnr umsks umskz augdt augbl zuonr gjahr belnr buzei.
+
+*******************        BEGIN OF INSERT SF RSG 19.08.2024       ************************
+    CLEAR: gt_bukrs.
+    DATA: ls_bukrs TYPE ty_bukrs.
+    LOOP AT gt_bsak ASSIGNING FIELD-SYMBOL(<fs_bsak>).
+      <fs_bsak>-gjahra  = <fs_bsak>-augdt(4).
+      ls_bukrs-bukrs    = <fs_bsak>-bukrs.
+      ls_bukrs-gjahr    = <fs_bsak>-gjahr.
+      APPEND ls_bukrs TO gt_bukrs.
+      ls_bukrs-bukrs    = <fs_bsak>-bukrs.
+**      ls_bukrs-gjahr    = <fs_bsak>-gjahr - 1.
+      ls_bukrs-gjahr    = <fs_bsak>-gjahra.
+      APPEND ls_bukrs TO gt_bukrs.
+    ENDLOOP.
+    SORT gt_bukrs BY bukrs gjahr.
+    DELETE ADJACENT DUPLICATES FROM gt_bukrs COMPARING bukrs gjahr.
+*******************        END   OF INSERT SF RSG 19.08.2024       ************************
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo consulta BSAK (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+  ENDMETHOD.
+  METHOD process_data.
+
+    DATA:  ti_reguh  TYPE STANDARD TABLE OF reguh.
+
+    DATA:    wa_reguh  TYPE reguh.
+
+    DATA: ti_t042iy TYPE STANDARD TABLE OF t042iy,
+          wa_t042iy TYPE t042iy.
+
+    DATA: lv_awkey TYPE awkey.
+
+
+    SORT:gt_bsak BY bukrs gjahr belnr.
+
+
+
+    SELECT * FROM t042iy
+      INTO TABLE ti_t042iy.
+
+    SORT  ti_t042iy BY ukont ASCENDING.
+
+    DELETE ADJACENT DUPLICATES FROM ti_t042iy  COMPARING ukont.
+
+
+    DATA: grf_ukont TYPE RANGE OF ukont_042i.
+
+*ADD VMAJ 22.07.2024; Declaración de datos;Inicio.
+    TYPES:BEGIN OF ty_payr,
+            rzawe TYPE payr-rzawe,
+            chect TYPE payr-chect,
+          END OF ty_payr,
+
+          BEGIN OF ty_reguh,
+            rzawe TYPE reguh-rzawe,
+            laufi TYPE reguh-laufi,
+          END OF ty_reguh.
+*ADD VMAJ 22.07.2024; Declaración de datos;Fin.
+
+    DATA: "ls_payr      TYPE ty_payr,
+      "ls_reguh     TYPE ty_reguh,
+      lv_wrbtr(15) TYPE c,
+      lv_int       TYPE i.
+
+    DATA: gwaf_ukont LIKE LINE OF grf_ukont.
+
+    DATA: vl_long TYPE i.
+
+    REFRESH: grf_ukont.
+    CLEAR: gwaf_ukont.
+
+
+    LOOP AT ti_t042iy INTO wa_t042iy.
+      gwaf_ukont-sign    = 'I'.
+      gwaf_ukont-option  = 'EQ'.
+      gwaf_ukont-low    = wa_t042iy-ukont.
+      APPEND gwaf_ukont TO grf_ukont.
+    ENDLOOP.
+
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.                                                                                               "ADD SF RSG 05.11.2024
+
+*ADD VMAJ 25.07.2024; Traer datos de la tabla BSAK; Inicio.
+    SELECT *
+     FROM  bsak
+     WHERE
+*          bukrs EQ @<lf_bsak>-bukrs    AND
+*          lifnr EQ @<lf_bsak>-lifnr    AND
+        augdt IN @s_augdt            AND
+*          augbl EQ @<lf_bsak>-augbl    AND
+*          gjahr EQ @<lf_bsak>-augdt(4) AND
+        blart IN @s_blart            AND
+        blart NE 'KA'                AND
+        xragl EQ 'X'
+     INTO TABLE @DATA(it_bsak).
+*ADD VMAJ 25.07.2024; Traer datos de la tabla BSAK; Fin.
+*****************************              BEGIN OF INSERT sf rsg 05.11.2024            *********************************
+
+**    SELECT FROM bsak_view AS b
+**      INNER JOIN @gt_bsak AS g
+**      ON b~bukrs EQ g~bukrs
+**     AND b~lifnr EQ g~lifnr
+**     AND b~augbl EQ g~augbl
+**     AND b~gjahr EQ g~gjahra
+**      FIELDS b~bukrs, b~lifnr, b~umsks, b~umskz, b~augdt, b~augbl, b~zuonr, b~gjahr, b~belnr, b~buzei, b~xblnr, b~wrbtr, b~waers, b~hkont, b~blart, b~rebzg, b~rebzj
+**     WHERE b~augdt IN @s_augdt
+***       AND b~blart NOT IN @s_blart
+**     INTO TABLE @DATA(lt_bsak).
+
+**    IF sy-subrc EQ 0.
+**      SORT lt_bsak BY bukrs lifnr augdt augbl zuonr gjahr belnr buzei.
+**      DELETE ADJACENT DUPLICATES FROM lt_bsak COMPARING bukrs lifnr augdt augbl zuonr gjahr belnr buzei.
+**    ENDIF.
+
+    SELECT FROM bseg AS b
+    INNER JOIN @gt_bsak AS g
+       ON b~bukrs EQ g~bukrs
+      AND b~belnr EQ g~augbl
+      AND b~gjahr EQ g~gjahra
+      FIELDS b~bukrs, b~belnr, b~gjahr, b~buzei, b~hkont
+      WHERE b~hkont IN @grf_ukont
+      INTO TABLE @DATA(lt_hkont).
+
+    SELECT FROM payr AS p
+      INNER JOIN @gt_bsak AS g
+         ON p~zbukr = g~bukrs
+        AND p~lifnr = g~lifnr
+        AND p~gjahr = g~gjahra
+      AND p~vblnr = g~augbl
+      FIELDS p~zbukr, p~lifnr, p~gjahr, p~vblnr, p~rzawe , p~chect
+      INTO TABLE @DATA(lt_payr).
+
+    SELECT FROM reguh AS p
+      INNER JOIN @gt_bsak AS g
+       ON p~zbukr = g~bukrs
+      AND p~lifnr = g~lifnr
+      AND p~laufd = g~augdt
+      AND p~vblnr = g~augbl
+      FIELDS p~zbukr, p~lifnr, p~laufd, p~vblnr, p~rzawe , p~laufi
+      INTO TABLE @DATA(lt_reguh).
+
+
+    SELECT FROM bsas_view AS b
+      INNER JOIN @lt_hkont AS g
+       ON b~bukrs EQ g~bukrs
+      AND b~hkont EQ g~hkont
+      AND b~gjahr EQ g~gjahr
+      AND b~belnr EQ g~belnr
+**      INNER JOIN bkpf AS k
+**      ON  k~bukrs EQ b~bukrs
+**      AND k~belnr EQ b~augbl
+**      AND k~gjahr EQ b~gjahr
+      FIELDS b~bukrs, b~hkont, b~augdt, b~augbl, b~zuonr, b~gjahr, b~belnr, b~buzei,
+       b~budat, b~bldat, b~waers, b~wrbtr
+**      , k~xreversed
+      WHERE "b~buzei <> @<lf_bsak>-buzei"ls_bsak-buzei
+            b~augdt IN @s_augdt
+**        AND k~xreversed NE @abap_true
+      INTO TABLE @DATA(lt_bsas).
+    IF sy-subrc EQ 0.
+      DATA: lt_bkpfr TYPE tt_sort_bkpf.
+      SELECT FROM bkpf AS k
+        INNER JOIN @lt_bsas AS g
+         ON k~bukrs EQ g~bukrs
+        AND k~belnr EQ g~augbl
+        AND k~gjahr EQ g~gjahr
+*        FIELDS k~bukrs, k~belnr, k~gjahr, k~xreversed
+      FIELDS DISTINCT k~bukrs, k~belnr, k~gjahr,
+             k~blart, k~waers, k~awtyp ,k~awkey , k~xreversed
+        WHERE k~xreversed NE @abap_true
+        INTO TABLE @lt_bkpfr.
+    ENDIF.
+
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo consulta BSAK (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+    DATA: lt_bkpf TYPE tt_sort_bkpf.
+    SELECT FROM bkpf AS b
+      INNER JOIN @gt_bsak AS g
+      ON b~bukrs EQ g~bukrs
+      AND b~belnr EQ g~belnr
+      AND b~gjahr EQ g~gjahr
+      FIELDS DISTINCT b~bukrs, b~belnr, b~gjahr, "b~awkey
+             b~blart, b~waers, b~awtyp ,b~awkey , b~xreversed                                                                                                 "ADD SF RSG 05.11.2024
+*      WHERE b~awtyp EQ 'BKPFF'
+      INTO TABLE @lt_bkpf.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    GET TIME STAMP FIELD lv_end_time.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo consulta BKPF (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+
+
+**        SELECT bukrs, belnr, gjahr, awkey
+**          FROM bkpf
+**          INTO @DATA(lt_bkpf
+**          WHERE bukrs = <lf_bsak>-bukrs AND
+**                belnr = <lf_bsak>-belnr AND
+**                gjahr = <lf_bsak>-gjahr AND
+**                blart = 'RE' AND
+**                awtyp = 'RMRP'.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+    LOOP AT gt_bsak ASSIGNING FIELD-SYMBOL(<lf_bsak>).
+
+      READ TABLE gt_items_sql_bsik INTO DATA(wa_sql_bsik)
+                              WITH KEY bukrs = <lf_bsak>-bukrs
+                                       belnr = <lf_bsak>-belnr
+                                       gjahr = <lf_bsak>-gjahr
+                                       buzei = <lf_bsak>-buzei.
+
+      IF wa_sql_bsik-belnr_ep IS INITIAL.
+
+        APPEND INITIAL LINE TO gt_out_items ASSIGNING FIELD-SYMBOL(<lf_items>).
+*      <lf_items>-belnr = <lf_bsak>-belnr.
+*      <lf_items>-gjahr = <lf_bsak>-gjahr.
+        <lf_items>-bukrs = <lf_bsak>-bukrs.
+        <lf_items>-buzei = <lf_bsak>-buzei.
+        <lf_items>-wrbtr = <lf_bsak>-wrbtr.
+*      <lf_items>-waers = <lf_bsak>-waers.
+        <lf_items>-lifnr = <lf_bsak>-lifnr.
+        <lf_items>-saknr = <lf_bsak>-saknr.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+        READ TABLE lt_bkpf INTO DATA(ls_bkpf) WITH KEY bukrs = <lf_bsak>-bukrs
+                                                       belnr = <lf_bsak>-belnr
+                                                       gjahr = <lf_bsak>-gjahr BINARY SEARCH.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+        IF <lf_bsak>-blart = 'RE'.
+          CLEAR: lv_awkey.
+
+**        SELECT SINGLE awkey INTO lv_awkey
+**          FROM bkpf
+**          WHERE bukrs = <lf_bsak>-bukrs AND
+**                belnr = <lf_bsak>-belnr AND
+**                gjahr = <lf_bsak>-gjahr AND
+**                blart = 'RE' AND
+**                awtyp = 'RMRP'.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          IF sy-subrc EQ 0 AND ls_bkpf-blart = 'RE' AND ls_bkpf-awtyp = 'RMRP'.
+            lv_awkey = ls_bkpf-awkey.
+          ENDIF.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+          IF lv_awkey IS NOT INITIAL.
+            <lf_items>-belnr  = lv_awkey(10).
+            <lf_items>-gjahr  = lv_awkey+10(4).
+          ELSE.
+            <lf_items>-belnr  = <lf_bsak>-belnr.
+            <lf_items>-gjahr  = <lf_bsak>-gjahr.
+          ENDIF.
+        ELSE.
+          <lf_items>-belnr  = <lf_bsak>-belnr.
+          <lf_items>-gjahr  = <lf_bsak>-gjahr.
+        ENDIF.
+
+
+
+        <lf_items>-belnr_p = <lf_bsak>-augbl.
+        <lf_items>-gjahr_p = <lf_bsak>-augdt(4).
+        <lf_items>-bukrs_p = <lf_bsak>-bukrs.
+        <lf_items>-bldat_p = <lf_bsak>-augdt.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+        IF ls_bkpf IS NOT INITIAL.
+          <lf_items>-waers_p = ls_bkpf-waers.
+        ELSE.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+          SELECT SINGLE waers
+            FROM bkpf INTO <lf_items>-waers_p
+            WHERE bukrs = <lf_bsak>-bukrs AND
+            belnr = <lf_bsak>-augbl AND
+            gjahr = <lf_bsak>-augdt(4).
+        ENDIF.
+
+        SELECT SINGLE buzei,
+             wrbtr,
+             hkont,
+          blart    "Add FRT Para saber el tipo de documento y asignar la marca de anulacion solicitada 04.09.2024
+         FROM bsak
+         WHERE bukrs EQ @<lf_bsak>-bukrs
+           AND lifnr EQ @<lf_bsak>-lifnr
+           AND augdt IN @s_augdt
+           AND augbl EQ @<lf_bsak>-augbl
+           AND gjahr EQ @<lf_bsak>-augdt(4)
+           AND blart NOT IN @s_blart
+           "AND blart NE 'KA'   "FRT poder enviar los KA anulados 01.09.2024
+         INTO  @DATA(ls_bsak).
+        IF sy-subrc EQ 0.
+          IF ls_bsak-blart = 'KA'.  "FRT poder enviar los KA anulados con la marca de tiporef = A para eliminarlos en el portal 04.09.2024
+            <lf_items>-tiporef = 'A'.
+          ENDIF.
+          IF ls_bsak-blart = 'AB'.  "ADD SF RSG 26.12.2024  Toma estos documentos como documentos de compensación
+            <lf_items>-tiporef = 'S'.
+          ENDIF.
+
+          <lf_items>-buzei_p = ls_bsak-buzei.
+***      <lf_items>-wrbtr_p = ls_bsak-wrbtr.
+          <lf_items>-wrbtr_p = <lf_bsak>-wrbtr.
+          IF ls_bsak-wrbtr LT <lf_items>-wrbtr_p AND ls_bkpf-blart = 'RE'.       "ADD SF RSG 12.03.2025
+            <lf_items>-wrbtr_p = ls_bsak-wrbtr.
+          ENDIF.
+          <lf_items>-action   =  zcl_external_db_util=>gc_insert.
+        ELSE.
+*ADD VMAJ 25.07.2024; Se agrega 'ELSE' en caso de no encontrar registros; Inicio.
+          READ TABLE it_bsak INTO DATA(wa_bsak) WITH KEY bukrs = <lf_bsak>-bukrs lifnr = <lf_bsak>-lifnr
+*        READ TABLE lt_bsak INTO DATA(wa_bsak) WITH KEY bukrs = <lf_bsak>-bukrs lifnr = <lf_bsak>-lifnr
+                                                         augbl = <lf_bsak>-augbl gjahr = <lf_bsak>-augdt(4).
+          IF sy-subrc = 0.
+            <lf_items>-buzei_p = wa_bsak-buzei.
+            <lf_items>-wrbtr_p = <lf_bsak>-wrbtr.
+            <lf_items>-action  = zcl_external_db_util=>gc_insert.
+          ENDIF.
+*ADD VMAJ 25.07.2024; Se agrega 'ELSE' en caso de no encontrar registros; Fin.
+        ENDIF.
+
+******************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+**      LOOP AT lt_bsak INTO DATA(ls_bsak) WHERE bukrs EQ <lf_bsak>-bukrs
+**                                           AND lifnr EQ <lf_bsak>-lifnr
+**                                           AND augbl EQ <lf_bsak>-augbl
+**                                           AND gjahr EQ <lf_bsak>-gjahra
+**                                           AND blart NOT IN s_blart.
+**        IF ls_bsak-blart = 'KA'.          "FRT poder enviar los KA anulados con la marca de tiporef = A para eliminarlos en el portal 04.09.2024
+**          <lf_items>-tiporef = 'A'.
+**        ENDIF.
+**
+**        <lf_items>-buzei_p = ls_bsak-buzei.
+**        <lf_items>-wrbtr_p = <lf_bsak>-wrbtr.
+**        <lf_items>-action   =  zcl_external_db_util=>gc_insert.
+**        EXIT.
+**      ENDLOOP.
+******************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+*** Inicia ETA_001 resta fondo de garantía y retenciones
+        SELECT *
+          FROM bsak
+          INTO TABLE @DATA(lt_bsakd)
+          WHERE ( bukrs EQ @<lf_bsak>-bukrs
+            AND lifnr EQ @<lf_bsak>-lifnr
+            AND augdt IN @s_augdt
+            AND augbl EQ @<lf_bsak>-augbl
+            AND gjahr EQ @<lf_bsak>-gjahr
+*            AND blart NOT IN @s_blart
+            AND blart NE 'ZP'
+            AND blart NE 'KZ'
+            AND rebzg EQ @<lf_bsak>-belnr
+            AND rebzj EQ @<lf_bsak>-gjahr )
+          OR
+            ( bukrs EQ @<lf_bsak>-bukrs
+            AND lifnr EQ @<lf_bsak>-lifnr
+            AND augdt IN @s_augdt
+            AND augbl EQ @<lf_bsak>-augbl
+            AND gjahr EQ @<lf_bsak>-gjahr
+*            AND blart NOT IN @s_blart
+            AND blart NE 'ZP'
+            AND blart NE 'KZ'
+            AND belnr EQ @<lf_bsak>-belnr ).
+
+        IF sy-subrc EQ 0.
+*          DATA: lv_wrbtr_full TYPE wrbtr.
+*          lv_wrbtr_full = <lf_bsak>-wrbtr.
+          CLEAR  <lf_items>-wrbtr_p.                                                                                                    "ADD SF RSG 05.12.2024
+          LOOP AT lt_bsakd ASSIGNING FIELD-SYMBOL(<fs_bsakd>).
+*****************************              BEGIN OF INSERT SF RSG 05.12.2024            *********************************
+**      LOOP AT lt_bsak ASSIGNING FIELD-SYMBOL(<fs_bsakd>) WHERE bukrs EQ <lf_bsak>-bukrs
+**                                                           AND lifnr EQ <lf_bsak>-lifnr
+**                                                           AND augdt IN s_augdt
+**                                                           AND augbl EQ <lf_bsak>-augbl
+**                                                           AND gjahr EQ <lf_bsak>-gjahra
+**                                                           AND ( blart NOT IN s_blart
+**                                                           AND blart NE 'ZP'
+**                                                           AND blart NE 'KZ' )
+**                                                           AND rebzg EQ <lf_bsak>-belnr
+**                                                           AND rebzj EQ <lf_bsak>-gjahr.
+            IF <fs_bsakd>-blart NE 'KA' OR ( <fs_bsakd>-blart EQ 'KA' AND <lf_items>-belnr = <fs_bsakd>-xblnr ).
+              IF <fs_bsakd>-shkzg EQ 'S'.
+                <lf_items>-wrbtr_p = <lf_items>-wrbtr_p + <fs_bsakd>-wrbtr.
+              ELSE.
+                <lf_items>-wrbtr_p = <lf_items>-wrbtr_p - <fs_bsakd>-wrbtr.
+              ENDIF.
+            ENDIF.
+*******************************              END   OF INSERT SF RSG 05.12.2024            *********************************
+**          IF <fs_bsakd>-blart NE 'KA'.
+**            <lf_items>-wrbtr_p = <lf_items>-wrbtr_p - <fs_bsakd>-wrbtr.
+**          ELSEIF <fs_bsakd>-blart EQ 'KA' AND <lf_items>-belnr = <fs_bsakd>-xblnr.
+**            <lf_items>-wrbtr_p = <lf_items>-wrbtr_p - <fs_bsakd>-wrbtr.
+**          ENDIF.
+          ENDLOOP.
+
+*ADD VMAJ 22.07.2024; Cambiar de lugar el signo;Inicio.
+          IF <lf_items>-wrbtr_p IS INITIAL.
+            <lf_items>-wrbtr_p = 0.
+          ENDIF.
+          IF <lf_items>-wrbtr_p LT 0.
+**          lv_int = strlen( <lf_items>-wrbtr_p ).
+**          lv_int = lv_int - 1.
+**          lv_wrbtr = <lf_items>-wrbtr_p(lv_int).
+**          CLEAR <lf_items>-wrbtr_p.
+**          CONCATENATE '-' lv_wrbtr INTO <lf_items>-wrbtr_p.
+            <lf_items>-wrbtr_p = <lf_items>-wrbtr_p * -1.
+          ENDIF.
+*ADD VMAJ 22.07.2024; Cambiar de lugar el signo;Fin.
+
+*****************************              BEGIN OF INSERT SF RSG 05.12.2024            *********************************
+*          IF lv_wrbtr_full < <lf_items>-wrbtr_p.
+*            <lf_items>-wrbtr_p = lv_wrbtr_full.
+*          ENDIF.
+        ENDIF.
+        CONDENSE <lf_items>-wrbtr_p NO-GAPS.
+*****************************              END   OF INSERT SF RSG 05.12.2024            *********************************
+*** Termina ETA_001 resta fondo de garantía y retenciones
+
+**      SELECT SINGLE hkont
+**        FROM bseg INTO @DATA(ls_hkont)
+**        WHERE bukrs EQ @<lf_bsak>-bukrs AND
+**              belnr EQ @<lf_bsak>-augbl AND
+**              gjahr EQ @<lf_bsak>-augdt(4) AND
+**              hkont IN @grf_ukont.
+**
+**      <lf_items>-saknr_p = ls_hkont-h.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+        READ TABLE lt_hkont INTO DATA(ls_hkont) WITH KEY bukrs = <lf_bsak>-bukrs
+                                                         belnr = <lf_bsak>-augbl
+                                                         gjahr = <lf_bsak>-augdt(4).
+        IF sy-subrc EQ 0.
+          <lf_items>-saknr_p = ls_hkont-hkont.
+        ENDIF.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+**      SELECT SINGLE rzawe , chect
+**        FROM payr
+**        INTO @ls_payr "MODIFY VMAJ 22.07.2024;Se crea WA ;@DATA(ls_payr).
+**        WHERE zbukr = @<lf_bsak>-bukrs AND
+**              lifnr = @<lf_bsak>-lifnr  AND
+**              gjahr = @<lf_bsak>-augdt(4) AND
+**              vblnr = @<lf_bsak>-augbl.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+        READ TABLE lt_payr INTO DATA(ls_payr) WITH KEY zbukr = <lf_bsak>-bukrs
+                                                       lifnr = <lf_bsak>-lifnr
+                                                       gjahr = <lf_bsak>-augdt(4)
+                                                       vblnr = <lf_bsak>-augbl.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+        IF sy-subrc = 0.
+
+          <lf_items>-tiporef    = ls_payr-rzawe.
+          <lf_items>-referencia =  ls_payr-chect.
+
+        ELSE.
+
+**        SELECT SINGLE rzawe, laufi
+**          FROM reguh
+**          INTO @ls_reguh "MODIFY VMAJ 22.07.2024;Se crea WA.
+**          WHERE zbukr = @<lf_bsak>-bukrs AND
+**              lifnr = @<lf_bsak>-lifnr  AND
+**              laufd = @<lf_bsak>-augdt AND
+**              vblnr = @<lf_bsak>-augbl.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          READ TABLE lt_reguh INTO DATA(ls_reguh) WITH KEY zbukr = <lf_bsak>-bukrs
+                                                           lifnr = <lf_bsak>-lifnr
+                                                           laufd = <lf_bsak>-augdt
+                                                           vblnr = <lf_bsak>-augbl.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+          IF sy-subrc = 0.
+            <lf_items>-tiporef    = ls_reguh-rzawe.
+            <lf_items>-referencia = ls_reguh-laufi.
+          ENDIF.
+        ENDIF.
+
+
+        IF strlen( <lf_items>-referencia ) > 10.
+          vl_long = strlen( <lf_items>-referencia ) - 10.
+          <lf_items>-referencia = <lf_items>-referencia+vl_long(10).
+        ENDIF.
+
+
+**      SELECT SINGLE bukrs,hkont,augdt,augbl,zuonr,gjahr,belnr,buzei,
+**        budat,bldat,waers,wrbtr FROM bsas
+**        WHERE bukrs EQ @<lf_bsak>-bukrs
+**        AND   belnr EQ @<lf_bsak>-augbl
+**        AND   gjahr EQ @<lf_bsak>-augdt(4)
+*****        AND   buzei <> @<lf_bsak>-buzei"ls_bsak-buzei
+**        AND   augdt IN @s_augdt
+**        AND   hkont EQ @ls_hkont
+**        INTO @DATA(ls_bsas).
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+        IF ls_hkont IS NOT INITIAL.
+          READ TABLE lt_bsas INTO DATA(ls_bsas) WITH KEY bukrs = <lf_bsak>-bukrs
+                                                         belnr = <lf_bsak>-augbl
+                                                         gjahr = <lf_bsak>-augdt(4)
+                                                         hkont = ls_hkont-hkont.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+          IF sy-subrc = 0.
+**          SELECT SINGLE belnr FROM bkpf
+**              INTO @DATA(lv_bukrs_rev)
+**              WHERE xreversed = 'X' AND
+**              bukrs = @ls_bsas-bukrs AND
+**              belnr = @ls_bsas-augbl AND
+**              gjahr = @ls_bsas-augdt(4).
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+            READ TABLE lt_bkpfr TRANSPORTING NO FIELDS WITH KEY bukrs = ls_bsas-bukrs
+                                                                belnr = ls_bsas-augbl
+                                                                gjahr = ls_bsas-augdt(4) BINARY SEARCH.
+*                                                              xreversed = 'X'.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+            IF sy-subrc <> 0.
+              <lf_items>-belnr_ep = ls_bsas-augbl.
+              <lf_items>-gjahr_ep = ls_bsas-augdt(4).
+              <lf_items>-bukrs_ep = ls_bsas-bukrs.
+              <lf_items>-buzei_ep = ls_bsas-buzei.
+              <lf_items>-bldat_ep = ls_bsas-augdt.
+              <lf_items>-wrbtr_ep = ls_bsas-wrbtr.
+              <lf_items>-waers_ep = ls_bsas-waers.
+              <lf_items>-saknr_ep = ''.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+
+***Pagos anticipados
+        IF <lf_items>-belnr_ep IS INITIAL.
+          LOOP AT lt_bsakd ASSIGNING FIELD-SYMBOL(<fs_bsakd1>) WHERE blart = 'KA' OR blart = 'KZ'.
+**        LOOP AT lt_bsak ASSIGNING FIELD-SYMBOL(<fs_bsakd1>) WHERE bukrs EQ <lf_bsak>-bukrs
+**                                                              AND lifnr EQ <lf_bsak>-lifnr
+**                                                              AND augdt IN s_augdt
+**                                                              AND augbl EQ <lf_bsak>-augbl
+**                                                              AND gjahr EQ <lf_bsak>-augdt(4)
+**                                                              AND blart NOT IN s_blart
+**                                                              AND rebzg EQ <lf_bsak>-belnr
+**                                                              AND rebzj EQ <lf_bsak>-gjahr
+**                                                              AND ( blart = 'KA' OR blart = 'KZ' ).
+            IF <lf_items>-belnr NE <fs_bsakd1>-xblnr.
+              IF <lf_items>-wrbtr_ep IS INITIAL.
+***          <lf_items>-belnr_ep = <fs_bsakd1>-augbl.
+                <lf_items>-gjahr_ep = <fs_bsakd1>-augdt(4).
+                <lf_items>-bukrs_ep = <fs_bsakd1>-bukrs.
+                <lf_items>-buzei_ep = <fs_bsakd1>-buzei.
+                <lf_items>-bldat_ep = <fs_bsakd1>-augdt.
+                <lf_items>-wrbtr_ep = <lf_items>-wrbtr_ep + <fs_bsakd1>-wrbtr.
+                <lf_items>-waers_ep = <fs_bsakd1>-waers.
+                <lf_items>-saknr_ep = ''.
+              ENDIF.
+            ENDIF.
+          ENDLOOP.
+        ENDIF.
+**        CLEAR: lv_bukrs_rev.
+
+*****************      BEGIN OF INSERT SF RSG 29.07.2024       *********************
+        IF ls_bkpf IS INITIAL.
+          READ TABLE lt_bkpf INTO ls_bkpf WITH KEY bukrs = <lf_bsak>-bukrs
+                                                   belnr = <lf_bsak>-belnr
+                                                   gjahr = <lf_bsak>-gjahr.
+        ELSE.
+          sy-subrc = 0.
+        ENDIF.
+        IF sy-subrc EQ 0 AND ls_bkpf-awtyp EQ 'BKPFF'.
+          IF ls_bkpf-awkey+14(4) NE <lf_bsak>-gjahr.
+            <lf_items>-action       = zcl_external_db_util=>gc_delete.
+            APPEND <lf_items> TO gt_out_items_d.
+
+            SPLIT <lf_bsak>-zuonr AT '-' INTO DATA(lv_p) <lf_bsak>-zuonr.
+            READ TABLE gt_sap_log INTO DATA(ls_saplog) WITH KEY ref_doc = <lf_bsak>-zuonr.
+            IF sy-subrc EQ 0.
+              APPEND INITIAL LINE TO gt_out_items_d ASSIGNING FIELD-SYMBOL(<lf_items_dca>).
+              <lf_items_dca> = CORRESPONDING #( <lf_items> ).
+              <lf_items_dca>-belnr_h  = <lf_items_dca>-belnr.
+              <lf_items_dca>-bukrs_h  = <lf_items_dca>-bukrs.
+              <lf_items_dca>-gjahr_h  = <lf_items_dca>-gjahr.
+**            <lf_items_dca>-belnr    = ls_bkpf-awkey(10).
+**            <lf_items_dca>-bukrs    = ls_bkpf-awkey+10(4).
+**            <lf_items_dca>-gjahr    = ls_bkpf-awkey+14(4).
+              <lf_items_dca>-belnr    = ls_saplog-belnr.
+              <lf_items_dca>-bukrs    = ls_saplog-bukrsid.
+              <lf_items_dca>-gjahr    = ls_saplog-gjahr.
+              <lf_items_dca>-action   = zcl_external_db_util=>gc_delete.
+              APPEND INITIAL LINE TO gt_out_items ASSIGNING <lf_items_dca>.
+              <lf_items_dca> = CORRESPONDING #( <lf_items> ).
+              <lf_items_dca>-belnr_h  = <lf_items_dca>-belnr.
+              <lf_items_dca>-bukrs_h  = <lf_items_dca>-bukrs.
+              <lf_items_dca>-gjahr_h  = <lf_items_dca>-gjahr.
+*            <lf_items_dca>-belnr    = ls_bkpf-awkey(10).
+*            <lf_items_dca>-bukrs    = ls_bkpf-awkey+10(4).
+*            <lf_items_dca>-gjahr    = ls_bkpf-awkey+14(4).
+              <lf_items_dca>-belnr    = ls_saplog-belnr.
+              <lf_items_dca>-bukrs    = ls_saplog-bukrsid.
+              <lf_items_dca>-gjahr    = ls_saplog-gjahr.
+              <lf_items_dca>-action   = zcl_external_db_util=>gc_insert.
+*          ASSIGN <lf_items_dca> TO <lf_items>.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+*****************      END   OF INSERT SF RSG 29.07.2024       *********************
+
+        IF gt_items_sql IS NOT INITIAL.
+          IF <lf_bsak>-blart = 'RE' AND lv_awkey IS NOT INITIAL.
+
+            LOOP AT gt_items_sql ASSIGNING FIELD-SYMBOL(<lf_items_sql_2>) WHERE belnr = lv_awkey(10) AND gjahr = lv_awkey+10(4) AND bukrs = <lf_bsak>-bukrs.
+              IF <lf_bsak>-augbl = <lf_items_sql_2>-belnr_p AND <lf_bsak>-augdt(4) = <lf_items_sql_2>-gjahr_p AND <lf_bsak>-bukrs = <lf_items_sql_2>-bukrs_p.
+                IF <lf_items>-belnr_ep = <lf_items_sql_2>-belnr_ep AND <lf_items>-gjahr_ep = <lf_items_sql_2>-gjahr_ep AND <lf_items>-bukrs_ep = <lf_items_sql_2>-bukrs_ep.
+
+********************            BEGIN OF INSERT SF RSG 05.12.2024             ****************************
+                  DATA: lv_wrbtr_db TYPE wrbtr,
+                        lv_wrbtr_sq TYPE wrbtr.
+                  lv_wrbtr_db = <lf_items>-wrbtr_p.
+                  lv_wrbtr_sq = <lf_items_sql_2>-wrbtr_p.
+********************            END   OF INSERT SF RSG 05.12.2024             ****************************
+*                IF <lf_items>-referencia NE <lf_items_sql_2>-referencia.                                                              "ADD SF RSG 14.08.2024
+                  IF <lf_items>-referencia NE <lf_items_sql_2>-referencia OR lv_wrbtr_db NE lv_wrbtr_sq.                                  "ADD SF RSG 05.12.2024
+                    APPEND INITIAL LINE TO gt_out_items_d ASSIGNING FIELD-SYMBOL(<lf_items_d_1_2>).
+                    <lf_items_d_1_2>-belnr = lv_awkey(10).
+                    <lf_items_d_1_2>-gjahr = lv_awkey+10(4).
+                    <lf_items_d_1_2>-bukrs = <lf_bsak>-bukrs.
+                    <lf_items_d_1_2>-action   =  zcl_external_db_util=>gc_delete.
+                    EXIT.
+                  ELSE.
+                    <lf_items>-action   =  'F'.
+                  ENDIF.
+                ELSE.
+                  APPEND INITIAL LINE TO gt_out_items_d ASSIGNING <lf_items_d_1_2>.
+                  <lf_items_d_1_2>-belnr = lv_awkey(10).
+                  <lf_items_d_1_2>-gjahr = lv_awkey+10(4).
+                  <lf_items_d_1_2>-bukrs = <lf_bsak>-bukrs.
+                  <lf_items_d_1_2>-action   =  zcl_external_db_util=>gc_delete.
+                ENDIF.
+              ELSE.
+                APPEND INITIAL LINE TO gt_out_items_d ASSIGNING FIELD-SYMBOL(<lf_items_d_2>).
+                <lf_items_d_2>-belnr = lv_awkey(10).
+                <lf_items_d_2>-gjahr = lv_awkey+10(4).
+                <lf_items_d_2>-bukrs = <lf_bsak>-bukrs.
+                <lf_items_d_2>-action   =  zcl_external_db_util=>gc_delete.
+              ENDIF.
+            ENDLOOP.
+          ELSE.
+            LOOP AT gt_items_sql ASSIGNING FIELD-SYMBOL(<lf_items_sql>) WHERE belnr = <lf_bsak>-belnr AND gjahr = <lf_bsak>-gjahr AND bukrs = <lf_bsak>-bukrs.
+              IF <lf_bsak>-augbl = <lf_items_sql>-belnr_p AND <lf_bsak>-augdt(4) = <lf_items_sql>-gjahr_p AND <lf_bsak>-bukrs = <lf_items_sql>-bukrs_p.
+                IF <lf_items>-belnr_ep = <lf_items_sql>-belnr_ep AND <lf_items>-gjahr_ep = <lf_items_sql>-gjahr_ep AND <lf_items>-bukrs_ep = <lf_items_sql>-bukrs_ep.
+********************            BEGIN OF INSERT SF RSG 05.12.2024             ****************************
+                  lv_wrbtr_db = <lf_items>-wrbtr_p.
+                  lv_wrbtr_sq = <lf_items_sql>-wrbtr_p.
+********************            END   OF INSERT SF RSG 05.12.2024             ****************************
+                  IF <lf_items>-referencia NE <lf_items_sql>-referencia OR lv_wrbtr_db NE lv_wrbtr_sq                                   "ADD SF RSG 14.08.2024
+                    OR <lf_items>-tiporef NE <lf_items_sql>-tiporef.                                                                    "ADD SF RSG 26.12.2024
+                    APPEND INITIAL LINE TO gt_out_items_d ASSIGNING FIELD-SYMBOL(<lf_items_d_1>).
+                    <lf_items_d_1>-belnr = <lf_bsak>-belnr.
+                    <lf_items_d_1>-gjahr = <lf_bsak>-gjahr.
+                    <lf_items_d_1>-bukrs = <lf_bsak>-bukrs.
+                    <lf_items_d_1>-action   =  zcl_external_db_util=>gc_delete.
+                    EXIT.
+                  ELSE.
+                    <lf_items>-action   =  'F'.
+                  ENDIF.
+                ELSE.
+                  APPEND INITIAL LINE TO gt_out_items_d ASSIGNING <lf_items_d_1>.
+                  <lf_items_d_1>-belnr = <lf_bsak>-belnr.
+                  <lf_items_d_1>-gjahr = <lf_bsak>-gjahr.
+                  <lf_items_d_1>-bukrs = <lf_bsak>-bukrs.
+                  <lf_items_d_1>-action   =  zcl_external_db_util=>gc_delete.
+                ENDIF.
+              ELSE.
+                APPEND INITIAL LINE TO gt_out_items_d ASSIGNING FIELD-SYMBOL(<lf_items_d>).
+                <lf_items_d>-belnr = <lf_bsak>-belnr.
+                <lf_items_d>-gjahr = <lf_bsak>-gjahr.
+                <lf_items_d>-bukrs = <lf_bsak>-bukrs.
+                <lf_items_d>-action   =  zcl_external_db_util=>gc_delete.
+              ENDIF.
+            ENDLOOP.
+          ENDIF.
+        ENDIF.
+        CLEAR: ls_bkpf, ls_hkont.
+
+        IF <lf_items> IS ASSIGNED.
+          IF <lf_items>-belnr_p IS INITIAL.
+            CLEAR: <lf_items>-wrbtr_p, <lf_items>-waers_p, <lf_items>-saknr_p.
+          ENDIF.
+        ENDIF.
+      ENDIF.
+
+      CLEAR wa_sql_bsik.
+
+    ENDLOOP.
+
+    CLEAR wa_sql_bsik.
+    LOOP AT gt_items_sql_bsik INTO wa_sql_bsik WHERE belnr_p IS INITIAL AND
+                                                     wrbtr_p IS NOT INITIAL.
+
+      APPEND INITIAL LINE TO gt_out_items ASSIGNING <lf_items>.
+      <lf_items> = CORRESPONDING #( wa_sql_bsik ).
+      <lf_items>-action = 'I'.
+      CLEAR: <lf_items>-wrbtr_p, <lf_items>-waers_p, <lf_items>-saknr_p, <lf_items>-bldat_p,
+             <lf_items>-wrbtr_ep, <lf_items>-waers_ep, <lf_items>-saknr_ep, <lf_items>-bldat_ep.
+
+      APPEND INITIAL LINE TO gt_out_items_d ASSIGNING <lf_items_d>.
+      <lf_items_d> = CORRESPONDING #( wa_sql_bsik ).
+      <lf_items_d>-action = 'D'.
+    ENDLOOP.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    GET TIME STAMP FIELD lv_end_time.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo lógica BKPF (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+*    DATA(lt_temp_sql) = gt_items_sql.
+*    LOOP AT gt_items_sql ASSIGNING <lf_items_sql>.                                                                                    "ADD SF RSG 14.08.2024
+*
+*    ENDLOOP.
+  ENDMETHOD.
+  METHOD process_data_bsik.
+
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.                                                                                               "ADD SF RSG 05.11.2024
+
+    SORT ti_bsik BY belnr gjahr bukrs.
+    IF gt_items_sql_bsik IS NOT INITIAL.
+***Elimina los documentos compensados que se han vuelto a Abrir.
+      LOOP AT gt_items_sql_bsik ASSIGNING FIELD-SYMBOL(<lf_items_sql_bsik>).
+        READ TABLE ti_bsik WITH KEY belnr = <lf_items_sql_bsik>-belnr
+                                    gjahr = <lf_items_sql_bsik>-gjahr
+                                    bukrs = <lf_items_sql_bsik>-bukrs BINARY SEARCH TRANSPORTING NO FIELDS.
+        IF sy-subrc EQ 0.
+          LOOP AT ti_bsik ASSIGNING FIELD-SYMBOL(<lf_bsik>) FROM sy-tabix.
+            IF  <lf_bsik>-belnr = <lf_items_sql_bsik>-belnr
+              AND <lf_bsik>-gjahr = <lf_items_sql_bsik>-gjahr
+              AND <lf_bsik>-bukrs = <lf_items_sql_bsik>-bukrs.
+
+              APPEND INITIAL LINE TO gt_out_items_dbsik ASSIGNING FIELD-SYMBOL(<lf_items_dbsik>).
+              <lf_items_dbsik>-belnr = <lf_items_sql_bsik>-belnr.
+              <lf_items_dbsik>-gjahr = <lf_items_sql_bsik>-gjahr.
+              <lf_items_dbsik>-bukrs = <lf_items_sql_bsik>-bukrs.
+              <lf_items_dbsik>-action   =  zcl_external_db_util=>gc_delete.
+            ELSE.
+              EXIT.
+            ENDIF.
+          ENDLOOP.
+        ENDIF.
+      ENDLOOP.
+      SORT gt_out_items_dbsik.
+      DELETE ADJACENT DUPLICATES FROM gt_out_items_dbsik.
+    ENDIF.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo lógica process BSIK (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+  ENDMETHOD.
+
+  METHOD process_data_ep.
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.                                                                                               "ADD SF RSG 05.11.2024
+
+    DATA: lv_insert_sql TYPE i,
+          lv_insert_rpt TYPE i.
+
+    SORT:gt_bsak BY bukrs gjahr belnr.
+    REFRESH: gt_out_items.
+
+    DATA: ti_t042iy TYPE STANDARD TABLE OF t042iy,
+          wa_t042iy TYPE t042iy.
+
+    SELECT * FROM t042iy
+      INTO TABLE ti_t042iy.
+
+    SORT  ti_t042iy BY ukont ASCENDING.
+
+    DELETE ADJACENT DUPLICATES FROM ti_t042iy  COMPARING ukont.
+
+
+
+
+    DATA: grf_ukont TYPE RANGE OF ukont_042i.
+
+    DATA: gwaf_ukont LIKE LINE OF grf_ukont.
+    REFRESH grf_ukont.
+    CLEAR gwaf_ukont.
+
+    LOOP AT ti_t042iy INTO wa_t042iy.
+      gwaf_ukont-sign    = 'I'.
+      gwaf_ukont-option  = 'EQ'.
+      gwaf_ukont-low    = wa_t042iy-ukont.
+      APPEND gwaf_ukont TO grf_ukont.
+    ENDLOOP.
+
+
+
+    LOOP AT gt_items_sql ASSIGNING FIELD-SYMBOL(<lf_items_sql_ep>).
+      APPEND INITIAL LINE TO gt_out_items ASSIGNING FIELD-SYMBOL(<lf_items_ep>).
+
+      <lf_items_ep>-belnr = <lf_items_sql_ep>-belnr.
+      <lf_items_ep>-gjahr = <lf_items_sql_ep>-gjahr.
+      <lf_items_ep>-bukrs = <lf_items_sql_ep>-bukrs.
+      <lf_items_ep>-buzei = <lf_items_sql_ep>-buzei.
+      <lf_items_ep>-wrbtr = <lf_items_sql_ep>-wrbtr.
+      <lf_items_ep>-lifnr = <lf_items_sql_ep>-lifnr.
+      <lf_items_ep>-saknr = <lf_items_sql_ep>-saknr.
+      <lf_items_ep>-belnr_p = <lf_items_sql_ep>-belnr_p.
+      <lf_items_ep>-gjahr_p = <lf_items_sql_ep>-gjahr_p.
+      <lf_items_ep>-bukrs_p = <lf_items_sql_ep>-bukrs_p.
+      <lf_items_ep>-buzei_p = <lf_items_sql_ep>-buzei_p.
+      <lf_items_ep>-bldat_p = <lf_items_sql_ep>-bldat_p.
+      <lf_items_ep>-wrbtr_p = <lf_items_sql_ep>-wrbtr_p.
+      <lf_items_ep>-waers_p = <lf_items_sql_ep>-waers_p.
+      <lf_items_ep>-saknr_p = <lf_items_sql_ep>-saknr_p.
+
+
+
+      <lf_items_ep>-bukrs = <lf_items_sql_ep>-bukrs.
+      <lf_items_ep>-belnr = <lf_items_sql_ep>-belnr.
+      <lf_items_ep>-gjahr = <lf_items_sql_ep>-gjahr.
+
+      SELECT SINGLE buzei,
+           wrbtr,
+           hkont
+        FROM bsak
+       WHERE bukrs EQ @<lf_items_sql_ep>-bukrs
+       AND   lifnr EQ @<lf_items_sql_ep>-lifnr
+*       AND   augdt IN @s_augdt
+       AND   augbl EQ @<lf_items_sql_ep>-belnr_p
+       AND   gjahr EQ @<lf_items_sql_ep>-gjahr_p(4)
+       AND   blart NOT IN @s_blart
+       INTO  @DATA(ls_bsak).
+
+      <lf_items_ep>-action   =  zcl_external_db_util=>gc_update.
+
+
+
+      SELECT SINGLE hkont
+        FROM bseg INTO @DATA(ls_hkont)
+        WHERE bukrs EQ @<lf_items_sql_ep>-bukrs AND
+              belnr EQ @<lf_items_sql_ep>-belnr_p AND
+              gjahr EQ @<lf_items_sql_ep>-gjahr_p(4) AND
+              hkont IN @grf_ukont.
+
+      SELECT SINGLE bukrs,hkont,augdt,augbl,zuonr,gjahr,belnr,buzei,
+           budat,bldat,waers,wrbtr FROM bsas
+     WHERE bukrs EQ @<lf_items_sql_ep>-bukrs
+     AND   belnr EQ @<lf_items_sql_ep>-belnr_p
+     AND   gjahr EQ @<lf_items_sql_ep>-gjahr_p(4)
+     AND   buzei <> @ls_bsak-buzei
+*     AND   augdt IN @s_augdt
+     AND   hkont EQ @ls_hkont
+     INTO @DATA(ls_bsas).
+
+      IF sy-subrc = 0.
+
+
+        SELECT SINGLE belnr FROM bkpf
+          INTO @DATA(lv_bukrs_rev)
+          WHERE xreversed = 'X' AND
+          bukrs = @ls_bsas-bukrs AND
+          belnr = @ls_bsas-augbl AND
+          gjahr = @ls_bsas-augdt(4).
+
+        IF sy-subrc <> 0.
+          <lf_items_ep>-belnr_ep = ls_bsas-augbl.
+          <lf_items_ep>-gjahr_ep = ls_bsas-augdt(4).
+          <lf_items_ep>-bukrs_ep = ls_bsas-bukrs.
+          <lf_items_ep>-buzei_ep = ls_bsas-buzei.
+          <lf_items_ep>-bldat_ep = ls_bsas-augdt.
+          <lf_items_ep>-wrbtr_ep = ls_bsas-wrbtr.
+          <lf_items_ep>-waers_ep = ls_bsas-waers.
+          <lf_items_ep>-saknr_ep = ''.
+        ENDIF.
+
+      ENDIF.
+      CLEAR: lv_bukrs_rev.
+    ENDLOOP.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DELETE gt_out_items WHERE belnr_ep IS INITIAL.  "Se quita para evitar sobreexplotar la BD
+
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo consulta EP (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+*****************************              BEGIN OF INSERT SF RSG 05.12.2024            *********************************
+    DATA: lv_long TYPE i.
+    DESCRIBE TABLE gt_out_items LINES lv_long.
+    gv_message = lv_long.
+    CONCATENATE 'Líneas a modificar de ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+    WRITE: / gv_message.
+*****************************              END   OF INSERT SF RSG 05.12.2024            *********************************
+
+    IF gt_out_items IS NOT INITIAL.
+
+      DATA: sqlerr_ref  TYPE REF TO cx_sql_exception.                                                                                 "ADD SF RSG 04.11.2022
+      DO 10 TIMES.                                                                                                                    "ADD SF RSG 04.11.2022
+        TRY.
+*Crea instancia
+            DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+            DATA(lo_sql) = lo_con->connect( ).
+
+
+            DATA(lt_update_items) = gt_out_items.
+
+            update_to_ext_db( CHANGING co_con   = lo_con
+                                       co_sql   = lo_sql
+                                       ct_data  = lt_update_items ).
+
+**      CATCH zcx_external_db.
+**      CATCH cx_sql_exception .
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+            lo_con->disconnect( ).
+
+            EXIT.
+          CATCH cx_sql_exception INTO sqlerr_ref.
+            PERFORM handle_sql_exception USING sqlerr_ref CHANGING gv_message.
+            CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+            WRITE: / gv_message.
+            WAIT UP TO 1 SECONDS.
+          CATCH zcx_external_db INTO DATA(lx_error).                                                                                  "ADD SF RSG 04.11.2022
+            gv_message = lx_error->get_text( ).
+            CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+            WRITE: / gv_message.
+            WAIT UP TO 1 SECONDS.
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+        ENDTRY.
+**    lo_con->disconnect( ).
+      ENDDO.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+      GET TIME STAMP FIELD lv_end_time.
+      lv_duration = ( lv_end_time - lv_start_time ) / 1.
+      WRITE: / lv_end_time, '|Tiempo modificar ESTATUS_PAGO (segundos)|', lv_duration.
+      GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+      IF p_aviso = 'X'.
+        "para enviar el aviso a los pagos que no estan dentro del periodo
+
+        DATA: zaviso_items_1 TYPE STANDARD TABLE OF  zaviso_items,
+              zaviso_items_2 TYPE STANDARD TABLE OF  zaviso_items.
+
+        REFRESH:zaviso_items_1,
+              zaviso_items_2.
+
+        MOVE-CORRESPONDING  lt_update_items TO zaviso_items_1.
+        MOVE-CORRESPONDING lt_update_items TO zaviso_items_2.
+
+        DELETE zaviso_items_1 WHERE belnr_ep EQ space.
+        DELETE zaviso_items_2 WHERE belnr_ep EQ space.
+
+
+        DESCRIBE TABLE   zaviso_items_1 LINES lv_insert_rpt.
+        WRITE: / 'Lineas para enviar a funcion:' &&  lv_insert_rpt.
+
+
+
+        IF zaviso_items_1 IS NOT INITIAL.
+          WRITE: / 'Se enviara el correo'.
+          program = sy-repid.
+
+          CALL FUNCTION 'Z_AVISO_PAGOS'
+            EXPORTING
+              program        = program
+            TABLES
+              zaviso_items_1 = zaviso_items_1                   " Estructura para el aviso de pago
+              zaviso_items_2 = zaviso_items_2.                  " Estructura para el aviso de pago
+
+        ENDIF.
+      ENDIF.
+
+
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_ext_db_data_bsik.
+    DATA: lt_param          TYPE tbl_atp_sql_access_param,
+          lt_items_sql_bsik TYPE tt_std_items.
+    DATA: iv_where TYPE string,
+          iv_belnr TYPE string,
+          lv_long  TYPE i.
+
+    DO 5 TIMES.                                                                                                                       "ADD SF RSG 01.03.2023
+      REFRESH: gt_items_sql_bsik.                                                                                                     "ADD SF RSG 01.03.2023
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+          DATA: lv_start_time TYPE timestampl.                                                                                      "ADD SF RSG 05.11.2024
+          GET TIME STAMP FIELD lv_start_time.                                                                                       "ADD SF RSG 05.11.2024
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+**      CATCH cx_sql_exception INTO DATA(lo_exception).
+**
+**      CATCH zcx_external_db.
+**    ENDTRY.
+**    LOOP AT ti_bsik ASSIGNING FIELD-SYMBOL(<fs_bsik>).                                                                              "DELETE SF RSG 02.12.2022
+**    lt_param = VALUE #( ( value = <fs_bsik>-belnr )"'indexserver' )                                                                 "DELETE SF RSG 02.12.2022
+**                        ( value = <fs_bsik>-gjahr )"'MASTER' )                                                                      "DELETE SF RSG 02.12.2022
+**                        ( value = <fs_bsik>-bukrs ) )."'YES' ) ).                                                                   "DELETE SF RSG 02.12.2022
+          CLEAR: gt_items_sql_bsik.                                                                                                   "ADD SF RSG 02.12.2022
+          LOOP AT gt_bukrs ASSIGNING FIELD-SYMBOL(<fs_bukrs>).                                                                        "ADD SF RSG 02.12.2022
+            lt_param = VALUE #( ( value = <fs_bukrs>-bukrs )    "'indexserver' )                                                      "ADD SF RSG 02.12.2022
+                                ( value = <fs_bukrs>-gjahr ) ). "'MASTER' )                                                           "ADD SF RSG 02.12.2022
+
+**            DATA: lv_start_time TYPE timestampl.                                                                                      "ADD SF RSG 05.11.2024
+**            GET TIME STAMP FIELD lv_start_time.                                                                                       "ADD SF RSG 05.11.2024
+***TRY.
+            lo_con->execute_dyn_query(
+              EXPORTING
+                iv_field_clause  = |*|
+                iv_from_clause   = |FROM ESTATUS_PAGO|
+**          iv_where_clause  = |WHERE BELNR = ? AND GJAHR = ? AND BUKRS = ?|  "DELETE SF RSG 02.12.2022
+                  iv_where_clause  = |WHERE BUKRS = ? AND GJAHR = ?|                "ADD SF RSG 02.12.2022
+                it_params        = lt_param
+            IMPORTING
+              et_result        = lt_items_sql_bsik ).
+
+            IF lt_items_sql_bsik IS NOT INITIAL.
+              APPEND LINES OF lt_items_sql_bsik TO gt_items_sql_bsik.
+*******************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+**              DATA: lv_end_time TYPE timestampl.
+**              GET TIME STAMP FIELD lv_end_time.
+**              DATA: lv_duration TYPE p DECIMALS 7.
+**              lv_duration = ( lv_end_time - lv_start_time ) / 1.
+**              DESCRIBE TABLE lt_items_sql_bsik LINES lv_long.
+**              gv_message = lv_long.
+**              CONCATENATE 'Líneas obtenidas de la sociedad' <fs_bukrs>-bukrs <fs_bukrs>-gjahr ', tabla ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+**              WRITE: / gv_message.
+**              WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*******************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+            ENDIF.
+          ENDLOOP.
+
+**    TRY.
+          lo_con->disconnect( ).
+          ret = abap_true.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          DATA: lv_end_time TYPE timestampl.
+          GET TIME STAMP FIELD lv_end_time.
+          DATA: lv_duration TYPE p DECIMALS 7.
+          lv_duration = ( lv_end_time - lv_start_time ) / 1.
+          DESCRIBE TABLE gt_items_sql_bsik LINES lv_long.
+          gv_message = lv_long.
+          CONCATENATE 'Líneas obtenidas de ESTATUS_PAGO' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************                                                                                                     "ADD SF RSG 01.03.2023
+          EXIT.                                                                                                                       "ADD SF RSG 01.03.2023
+        CATCH cx_sql_exception INTO DATA(lo_exception1).
+
+        CATCH zcx_external_db.
+      ENDTRY.
+    ENDDO.      "ADD SF RSG 01.03.2023
+  ENDMETHOD.
+
+  METHOD get_ext_db_data.
+    DATA:lt_param  TYPE tbl_atp_sql_access_param.
+    DATA: iv_where TYPE string,
+          iv_belnr TYPE string.
+
+*
+*    CONCATENATE  'WHERE BELNR = ' '''' p_belnr '''' ' AND GJAHR = ' '''' p_gjahr '''' ' AND BUKRS = ' '''' p_bukrs ''''
+*    INTO iv_where.
+
+    DO 5 TIMES.                                                                                                                       "ADD SF RSG 01.03.2023
+      REFRESH: gt_items_sql.                                                                                                          "ADD SF RSG 01.03.2023
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+
+          DATA: lv_start_time TYPE timestampl.                                                                                        "ADD SF RSG 05.11.2024
+          GET TIME STAMP FIELD lv_start_time.                                                                                         "ADD SF RSG 05.11.2024
+
+          lo_con->execute_dyn_query(
+            EXPORTING
+              iv_field_clause  = |*|
+              iv_from_clause   = |FROM ESTATUS_PAGO|
+              iv_where_clause  = ||
+              it_params        = lt_param
+          IMPORTING
+            et_result        = gt_items_sql ).
+
+          lo_con->disconnect( ).
+          ret = abap_true.      "ADD SF RSG 01.03.2023
+**          EXIT.                 "ADD SF RSG 01.03.2023
+**        CATCH cx_sql_exception INTO DATA(lo_exception).
+**
+**        CATCH zcx_external_db.
+**
+**      ENDTRY.
+**    ENDDO.      "ADD SF RSG 01.03.2023
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          DATA: lv_end_time TYPE timestampl.
+          GET TIME STAMP FIELD lv_end_time.
+          DATA: lv_duration TYPE p DECIMALS 7.
+          lv_duration = ( lv_end_time - lv_start_time ) / 1.
+          DATA: lv_long TYPE i.
+          DESCRIBE TABLE gt_items_sql LINES lv_long.
+          gv_message = lv_long.
+          CONCATENATE 'Líneas a obtenidas de ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+          DATA: lt_sap_log TYPE STANDARD TABLE OF ty_sap_log.
+*          DATA: iv_where TYPE string,
+*                iv_belnr TYPE string,
+*                lv_long  TYPE i.
+
+**    DO 5 TIMES.
+          CLEAR: gt_sap_log.
+**      TRY.
+*Crea instancia
+          DATA(lo_con1) =  NEW zcl_external_db_util( p_connam ).
+          GET TIME STAMP FIELD lv_start_time.                                                                                       "ADD SF RSG 05.11.2024
+
+*Crea conexión con BD
+          DATA(lo_sql1) = lo_con1->connect( ).
+
+          LOOP AT gt_bukrs ASSIGNING FIELD-SYMBOL(<fs_bukrs>).
+            CLEAR:lt_sap_log.
+            lt_param = VALUE #( ( value = |FACSINOC| )
+                                ( value = <fs_bukrs>-bukrs )
+                                ( value = |312| )
+                                ( value = <fs_bukrs>-gjahr ) ).
+
+**            GET TIME STAMP FIELD lv_start_time.                                                                                       "ADD SF RSG 05.11.2024
+***TRY.
+            lo_con1->execute_dyn_query(
+              EXPORTING
+*                iv_field_clause     = |*|
+                iv_field_clause     = |id_ini,type_doc,ref_doc,ok_noc,action1,belnr, gjahr,bukrsid,mess,type,id,znumber|
+                iv_from_clause      = |FROM SAP_LOG|
+                  iv_where_clause   = |WHERE type_doc = ? AND BUKRSID = ? AND ZNUMBER = ? AND GJAHR = ?|
+                it_params        = lt_param
+            IMPORTING
+              et_result        = lt_sap_log ).
+
+            IF lt_sap_log IS NOT INITIAL.
+              APPEND LINES OF lt_sap_log TO gt_sap_log.
+*******************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+**              GET TIME STAMP FIELD lv_end_time.
+**              lv_duration = ( lv_end_time - lv_start_time ) / 1.
+**              DESCRIBE TABLE lt_sap_log LINES lv_long.
+**              gv_message = lv_long.
+**              CONCATENATE 'Líneas obtenidas de la sociedad' <fs_bukrs>-bukrs <fs_bukrs>-gjahr ', tabla SAP_LOG:' gv_message INTO gv_message SEPARATED BY space.
+**              WRITE: / gv_message.
+**              WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*******************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+            ENDIF.
+          ENDLOOP.
+*******************************              BEGIN OF INSERT SF RSG 27.12.2024            *********************************
+          LOOP AT gt_bukrs ASSIGNING <fs_bukrs>.
+            CLEAR:lt_sap_log.
+            lt_param = VALUE #( ( value = |REEMBOLSO| )
+                                ( value = <fs_bukrs>-bukrs )
+                                ( value = |312| )
+                                ( value = <fs_bukrs>-gjahr ) ).
+            lo_con1->execute_dyn_query(
+              EXPORTING
+                iv_field_clause     = |id_ini,type_doc,ref_doc,ok_noc,action1,belnr, gjahr,bukrsid,mess,type,id,znumber|
+                iv_from_clause      = |FROM SAP_LOG|
+                  iv_where_clause   = |WHERE type_doc = ? AND BUKRSID = ? AND ZNUMBER = ? AND GJAHR = ?|
+                it_params        = lt_param
+            IMPORTING
+              et_result        = lt_sap_log ).
+
+            IF lt_sap_log IS NOT INITIAL.
+              APPEND LINES OF lt_sap_log TO gt_sap_log.
+            ENDIF.
+          ENDLOOP.
+*******************************              END   OF INSERT SF RSG 27.12.2024            *********************************
+          CLEAR: gt_bukrs.                                                                                                            "ADD SF RSG 05.11.2024
+**    TRY.
+          lo_con1->disconnect( ).
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          GET TIME STAMP FIELD lv_end_time.
+          lv_duration = ( lv_end_time - lv_start_time ) / 1.
+          DESCRIBE TABLE gt_sap_log LINES lv_long.
+          gv_message = lv_long.
+          CONCATENATE 'Líneas obtenidas de la tabla SAP_LOG:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+          EXIT.
+        CATCH cx_sql_exception INTO DATA(lo_exception1).
+
+        CATCH zcx_external_db.
+      ENDTRY.
+    ENDDO.      "ADD SF RSG 01.03.2023
+  ENDMETHOD.
+
+  METHOD get_ext_db_data_ep.
+
+    DATA:lt_param  TYPE tbl_atp_sql_access_param.
+
+    REFRESH gt_items_sql.
+
+    DO 5 TIMES.                                                                                                                       "ADD SF RSG 01.03.2023
+      REFRESH: gt_items_sql.                                                                                                          "ADD SF RSG 01.03.2023
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+
+          DATA: lv_start_time TYPE timestampl.                                                                                        "ADD SF RSG 05.11.2024
+          GET TIME STAMP FIELD lv_start_time.                                                                                         "ADD SF RSG 05.11.2024
+
+          lo_con->execute_dyn_query(
+              EXPORTING
+                  iv_field_clause  = |*|
+                  iv_from_clause   = |FROM ESTATUS_PAGO|
+*                  iv_where_clause  = |WHERE BELNR_EP IS NULL|
+                  iv_where_clause  = |WHERE BELNR_EP IS NULL OR BELNR_EP = ''|                                                            "ADD SF RSG 04.12.2024
+                  it_params        = lt_param
+             IMPORTING
+                  et_result        = gt_items_sql ).
+
+          lo_con->disconnect( ).    "ADD SF RSG 23.08.2023
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          DATA: lv_end_time TYPE timestampl.
+          GET TIME STAMP FIELD lv_end_time.
+          DATA: lv_duration TYPE p DECIMALS 7.
+          lv_duration = ( lv_end_time - lv_start_time ) / 1.
+          DATA: lv_long TYPE i.
+          DESCRIBE TABLE gt_items_sql LINES lv_long.
+          gv_message = lv_long.
+          CONCATENATE 'Líneas obtenidas de ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+          ret = abap_true.                                                                                                            "ADD SF RSG 01.03.2023
+          EXIT.                                                                                                                       "ADD SF RSG 01.03.2023
+
+        CATCH cx_sql_exception INTO DATA(lo_exception).
+
+        CATCH zcx_external_db.
+      ENDTRY.
+    ENDDO.      "ADD SF RSG 01.03.2023
+  ENDMETHOD.
+
+
+
+
+  METHOD fill_out_table.
+  ENDMETHOD.
+  METHOD generate_output.
+    external_db( ).
+  ENDMETHOD.
+  METHOD delete_to_ext_db.
+
+    DATA:ls_key_item TYPE ty_key_item.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_long TYPE i.
+    DESCRIBE TABLE ct_data LINES lv_long.
+    gv_message = lv_long.
+    CONCATENATE 'Líneas a eliminar de ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+    WRITE: / gv_message.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+    IF ct_data IS NOT INITIAL.
+      DATA: lv_start_time TYPE timestampl.                                                                                            "ADD SF RSG 05.11.2024
+      GET TIME STAMP FIELD lv_start_time.                                                                                             "ADD SF RSG 05.11.2024
+
+      co_con->execute_dyn_delete(
+       EXPORTING
+         iv_statement_clause = |DELETE FROM|
+         iv_table_clause     = |ESTATUS_PAGO|
+         iv_where_clause     = |WHERE BELNR = ? AND GJAHR = ? AND BUKRS = ?|
+         it_data             = ct_data
+       CHANGING
+         cs_type_key         = ls_key_item ).
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+      DATA: lv_end_time TYPE timestampl.
+      GET TIME STAMP FIELD lv_end_time.
+      DATA: lv_duration TYPE p DECIMALS 7.
+      lv_duration = ( lv_end_time - lv_start_time ) / 1.
+      WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+    ENDIF.
+
+
+  ENDMETHOD.
+  METHOD insert_to_ext_db.
+
+    DATA: lt_type_sql      TYPE tt_std_items,
+          lt_duplicate_key TYPE tt_std_out_items,
+          lt_delete_data   TYPE tt_std_out_items,
+          ls_key_item      TYPE ty_key_item.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_long TYPE i.
+    DESCRIBE TABLE ct_data LINES lv_long.
+    gv_message = lv_long.
+    CONCATENATE 'Líneas a insertar a ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+    WRITE: / gv_message.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+    IF ct_data IS NOT INITIAL.
+      DATA: lv_start_time TYPE timestampl.                                                                                            "ADD SF RSG 05.11.2024
+      GET TIME STAMP FIELD lv_start_time.                                                                                             "ADD SF RSG 05.11.2024
+
+      co_con->execute_dyn_insert(
+        EXPORTING
+          iv_statement_clause  = |INSERT INTO|
+          iv_table_clause      = |ESTATUS_PAGO|
+*          iv_values_clause     = |VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)|
+          iv_values_clause     = |VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)|   "ADD SF RSG 30.07.2024
+          it_data              = ct_data
+          it_type_sql          = lt_type_sql
+          iv_get_duplicate_key = abap_true
+        IMPORTING
+          et_duplicate_key     = lt_duplicate_key ).
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+      DATA: lv_end_time TYPE timestampl.
+      GET TIME STAMP FIELD lv_end_time.
+      DATA: lv_duration TYPE p DECIMALS 7.
+      lv_duration = ( lv_end_time - lv_start_time ) / 1.
+      WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD update_to_ext_db.
+    DATA:ls_key    TYPE ty_key,
+         ls_values TYPE ty_update.
+
+    CHECK ct_data IS NOT INITIAL.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_long TYPE i.
+    DESCRIBE TABLE ct_data LINES lv_long.
+    gv_message = lv_long.
+    CONCATENATE 'Líneas a modificar de ESTATUS_PAGO:' gv_message INTO gv_message SEPARATED BY space.
+    WRITE: / gv_message.
+
+    DATA: lv_start_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+    co_con->execute_dyn_update(
+     EXPORTING
+       iv_statement_clause = |UPDATE|
+       iv_table_clause     = |ESTATUS_PAGO|
+       iv_values_clause    = |SET BELNR_EP = ?, GJAHR_EP = ?, BUKRS_EP = ?, BUZEI_EP = ?, BLDAT_EP = ?, WRBTR_EP = ?, WAERS_EP = ?, SAKNR_EP = ?|
+       iv_where_clause     = |WHERE BELNR = ? AND GJAHR = ? AND BUKRS = ?|
+       it_data             = ct_data
+     CHANGING
+       cs_type_values      = ls_values
+       cs_type_key         = ls_key ).
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+  ENDMETHOD.
+
+
+  METHOD external_db.
+
+    DATA: lv_insert_sql TYPE i,
+          lv_insert_rpt TYPE i.
+
+    DATA: sqlerr_ref  TYPE REF TO cx_sql_exception.                                                                                   "ADD SF RSG 04.11.2022
+    DO 10 TIMES.                                                                                                                      "ADD SF RSG 04.11.2022
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+
+
+          DATA(lt_insert_items) = gt_out_items.
+          DATA(lt_delete_items) = gt_out_items_d.
+
+          DELETE lt_insert_items WHERE action NE 'I'.
+          DELETE lt_delete_items WHERE action NE 'D'.
+
+
+          DESCRIBE TABLE  lt_insert_items LINES lv_insert_sql.
+          WRITE: / 'Lineas a insertar a SQL:' && lv_insert_sql.
+
+
+          delete_to_ext_db( CHANGING co_con   = lo_con
+                                     co_sql   = lo_sql
+                                     ct_data  = lt_delete_items ).
+
+          insert_to_ext_db( CHANGING co_con   = lo_con
+                                     co_sql   = lo_sql
+                                     ct_data  = lt_insert_items ).
+
+
+
+
+**      CATCH zcx_external_db.
+**      CATCH cx_sql_exception .
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+          lo_con->disconnect( ).
+
+          EXIT.
+        CATCH cx_sql_exception INTO sqlerr_ref.
+          PERFORM handle_sql_exception USING sqlerr_ref CHANGING gv_message.
+          CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WAIT UP TO 1 SECONDS.
+        CATCH zcx_external_db INTO DATA(lx_error).                                                                                    "ADD SF RSG 04.11.2022
+          gv_message = lx_error->get_text( ).
+          CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WAIT UP TO 1 SECONDS.
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+      ENDTRY.
+**    lo_con->disconnect( ).
+    ENDDO.
+
+    IF p_aviso = 'X'.
+      DATA: zaviso_items_1 TYPE STANDARD TABLE OF  zaviso_items,
+            zaviso_items_2 TYPE STANDARD TABLE OF  zaviso_items.
+
+
+      REFRESH:zaviso_items_1,
+        zaviso_items_2.
+
+      MOVE-CORRESPONDING  lt_insert_items TO zaviso_items_1.
+      MOVE-CORRESPONDING lt_insert_items TO zaviso_items_2.
+
+      DELETE zaviso_items_1 WHERE belnr_ep EQ space.
+      DELETE zaviso_items_2 WHERE belnr_ep EQ space.
+
+      DESCRIBE TABLE   zaviso_items_1 LINES lv_insert_rpt.
+      WRITE: / 'Lineas para enviar a funcion:' &&  lv_insert_rpt.
+
+      IF zaviso_items_1 IS NOT INITIAL.
+        program = sy-repid.
+
+        WRITE: / 'Se enviara el correo'.
+
+        CALL FUNCTION 'Z_AVISO_PAGOS'
+          EXPORTING
+            program        = program
+          TABLES
+            zaviso_items_1 = zaviso_items_1                 " Estructura para el aviso de pago
+            zaviso_items_2 = zaviso_items_2.                 " Estructura para el aviso de pago
+      ENDIF.
+
+    ENDIF.
+
+
+  ENDMETHOD.
+
+  METHOD external_db_bsik.
+
+    DATA: sqlerr_ref  TYPE REF TO cx_sql_exception.                                                                                   "ADD SF RSG 04.11.2022
+    DO 10 TIMES.                                                                                                                      "ADD SF RSG 04.11.2022
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+
+          DATA(lt_delete_items_bsik) = gt_out_items_dbsik.
+          DATA(lt_insert_items) = gt_out_items_dbsik.
+          CLEAR: gt_out_items_dbsik[].                                                                                                "ADD SF RSG 04.11.2022
+
+          DELETE lt_delete_items_bsik WHERE action NE 'D'.
+          DELETE lt_insert_items WHERE action NE 'I'.
+
+          delete_to_ext_db( CHANGING co_con   = lo_con
+                                     co_sql   = lo_sql
+                                     ct_data  = lt_delete_items_bsik ).
+
+          insert_to_ext_db( CHANGING co_con   = lo_con
+                                     co_sql   = lo_sql
+                                     ct_data  = lt_insert_items ).
+          CLEAR: lt_delete_items_bsik[], lt_insert_items[].                                                                           "ADD SF RSG 04.11.2022
+
+**      CATCH zcx_external_db.
+**      CATCH cx_sql_exception .
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+          lo_con->disconnect( ).
+
+          EXIT.
+        CATCH cx_sql_exception INTO sqlerr_ref.
+          PERFORM handle_sql_exception USING sqlerr_ref CHANGING gv_message.
+          CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WAIT UP TO 1 SECONDS.
+        CATCH zcx_external_db INTO DATA(lx_error).                                                                                    "ADD SF RSG 04.11.2022
+          gv_message = lx_error->get_text( ).
+          CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WAIT UP TO 1 SECONDS.
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+      ENDTRY.
+**    lo_con->disconnect( ).
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD get_ext_db_data_bkpf.
+    DATA:lt_param  TYPE tbl_atp_sql_access_param.
+    DATA: iv_where TYPE string,
+          iv_belnr TYPE string,
+          lv_long  TYPE i.
+
+
+    DO 5 TIMES.                                                                                                                       "ADD SF RSG 01.03.2023
+      REFRESH: gt_items_sql_bkpf.                                                                                                     "ADD SF RSG 01.03.2023
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+
+          DATA: lv_start_time TYPE timestampl.                                                                                        "ADD SF RSG 05.11.2024
+          GET TIME STAMP FIELD lv_start_time.                                                                                         "ADD SF RSG 05.11.2024
+
+          lo_con->execute_dyn_query(
+            EXPORTING
+              iv_field_clause  = |*|
+              iv_from_clause   = |FROM ESTATUS_PAGO|
+*                          iv_where_clause  = |WHERE BELNR_EP IS NULL|
+              iv_where_clause  = |WHERE BELNR_EP IS NULL OR BELNR_EP = ''|                                                            "ADD SF RSG 04.12.2024
+              it_params        = lt_param
+          IMPORTING
+            et_result        = gt_items_sql_bkpf ).
+
+          lo_con->disconnect( ).
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+          DATA: lv_end_time TYPE timestampl.
+          GET TIME STAMP FIELD lv_end_time.
+          DATA: lv_duration TYPE p DECIMALS 7.
+          lv_duration = ( lv_end_time - lv_start_time ) / 1.
+          DESCRIBE TABLE gt_items_sql_bkpf LINES lv_long.
+          gv_message = lv_long.
+          CONCATENATE 'Líneas a obtenidas de ESTATUS_PAGO con BELNR_EP = null:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WRITE: / lv_end_time, '|Tiempo transcurrido (segundos)|', lv_duration.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+
+          ret = abap_true.                                                                                                            "ADD SF RSG 01.03.2023
+          EXIT.                                                                                                                       "ADD SF RSG 01.03.2023
+        CATCH cx_sql_exception INTO DATA(lo_exception).
+
+        CATCH zcx_external_db.
+
+      ENDTRY.
+    ENDDO.      "ADD SF RSG 01.03.2023
+  ENDMETHOD.
+
+
+  METHOD process_data_bkpf.
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.                                                                                               "ADD SF RSG 05.11.2024
+
+    IF gt_items_sql_bkpf IS NOT INITIAL.
+      LOOP AT gt_items_sql_bkpf ASSIGNING FIELD-SYMBOL(<lf_items_sql_bkpf>)
+           WHERE tiporef NE 'A'.                                                                                                      "ADD SF RSG 02.01.2025 Se agrega para ignorar los anulados ya
+        SELECT SINGLE xreversed
+          INTO @DATA(lv_bkpf_rev)
+          FROM bkpf
+          WHERE bukrs = @<lf_items_sql_bkpf>-bukrs AND
+                belnr = @<lf_items_sql_bkpf>-belnr AND
+                gjahr = @<lf_items_sql_bkpf>-gjahr AND
+                xreversed = 'X'.
+
+        IF sy-subrc = 0.
+          APPEND INITIAL LINE TO gt_out_items_dbkpf ASSIGNING FIELD-SYMBOL(<lf_items_dbkpf>).
+          <lf_items_dbkpf>-belnr = <lf_items_sql_bkpf>-belnr.
+          <lf_items_dbkpf>-gjahr = <lf_items_sql_bkpf>-gjahr.
+          <lf_items_dbkpf>-bukrs = <lf_items_sql_bkpf>-bukrs.
+          <lf_items_dbkpf>-action   =  zcl_external_db_util=>gc_delete.
+        ENDIF.
+
+        SELECT SINGLE xreversed
+                  INTO @DATA(lv_bkpf_rev_p)
+                  FROM bkpf
+                  WHERE bukrs = @<lf_items_sql_bkpf>-bukrs_p AND
+                        belnr = @<lf_items_sql_bkpf>-belnr_p AND
+                        gjahr = @<lf_items_sql_bkpf>-gjahr_p AND
+                        xreversed = 'X'.
+
+        IF sy-subrc = 0.
+          APPEND INITIAL LINE TO gt_out_items_dbkpf ASSIGNING FIELD-SYMBOL(<lf_items_dbkpf_p>).
+          <lf_items_dbkpf_p>-belnr = <lf_items_sql_bkpf>-belnr.
+          <lf_items_dbkpf_p>-gjahr = <lf_items_sql_bkpf>-gjahr.
+          <lf_items_dbkpf_p>-bukrs = <lf_items_sql_bkpf>-bukrs.
+          <lf_items_dbkpf_p>-action   =  zcl_external_db_util=>gc_delete.
+        ENDIF.
+
+      ENDLOOP.
+
+      SORT gt_out_items_dbkpf BY bukrs belnr gjahr.
+      DELETE ADJACENT DUPLICATES FROM gt_out_items_dbkpf  COMPARING bukrs belnr gjahr.
+    ENDIF.
+
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo consulta REVERSED2 (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+  ENDMETHOD.
+
+
+  METHOD external_db_bkpf.
+
+    DATA: sqlerr_ref  TYPE REF TO cx_sql_exception.                                                                                   "ADD SF RSG 04.11.2022
+    DO 10 TIMES.                                                                                                                      "ADD SF RSG 04.11.2022
+      TRY.
+*Crea instancia
+          DATA(lo_con) =  NEW zcl_external_db_util( p_connam ).
+
+*Crea conexión con BD
+          DATA(lo_sql) = lo_con->connect( ).
+
+          DATA(lt_delete_items_bkpf) = gt_out_items_dbkpf.
+
+          DELETE lt_delete_items_bkpf WHERE action NE 'D'.
+
+
+          delete_to_ext_db( CHANGING co_con   = lo_con
+                                     co_sql   = lo_sql
+                                     ct_data  = lt_delete_items_bkpf ).
+
+**      CATCH zcx_external_db.
+**      CATCH cx_sql_exception .
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+          lo_con->disconnect( ).
+
+          EXIT.
+        CATCH cx_sql_exception INTO sqlerr_ref.
+          PERFORM handle_sql_exception USING sqlerr_ref CHANGING gv_message.
+          CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WAIT UP TO 1 SECONDS.
+        CATCH zcx_external_db INTO DATA(lx_error).                                                                                    "ADD SF RSG 04.11.2022
+          gv_message = lx_error->get_text( ).
+          CONCATENATE '--> Error:' gv_message INTO gv_message SEPARATED BY space.
+          WRITE: / gv_message.
+          WAIT UP TO 1 SECONDS.
+**********************        BEGIN OF INSERT SF RSG 07.11.2022     ******************************
+      ENDTRY.
+**    lo_con->disconnect( ).
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD doc_pago_reversado.
+    DATA: lv_start_time TYPE timestampl.                                                                                              "ADD SF RSG 05.11.2024
+    GET TIME STAMP FIELD lv_start_time.                                                                                               "ADD SF RSG 05.11.2024
+
+    IF gt_out_items IS NOT INITIAL.
+      LOOP AT gt_out_items ASSIGNING FIELD-SYMBOL(<lf_pagos>).
+        SELECT SINGLE xreversed
+          INTO @DATA(lv_doc_rev)
+          FROM bkpf
+          WHERE bukrs = @<lf_pagos>-bukrs AND
+                belnr = @<lf_pagos>-belnr AND
+                gjahr = @<lf_pagos>-gjahr AND
+                blart NE 'KR' AND "FRT para poder enviar los documentos reversados 01.09.2024
+                xreversed = 'X'.
+
+        IF sy-subrc = 0.
+          <lf_pagos>-action   =  'F'.
+        ENDIF.
+
+        SELECT SINGLE xreversed
+                  INTO @DATA(lv_doc_rev_p)
+                  FROM bkpf
+                  WHERE bukrs = @<lf_pagos>-bukrs_p AND
+                        belnr = @<lf_pagos>-belnr_p AND
+                        gjahr = @<lf_pagos>-gjahr_p AND
+                        xreversed = 'X'.
+
+        IF sy-subrc = 0.
+          <lf_pagos>-action   =  'F'.
+        ENDIF.
+
+      ENDLOOP.
+
+    ENDIF.
+*****************************              BEGIN OF INSERT SF RSG 05.11.2024            *********************************
+    DATA: lv_end_time TYPE timestampl.
+    GET TIME STAMP FIELD lv_end_time.
+    DATA: lv_duration TYPE p DECIMALS 7.
+    lv_duration = ( lv_end_time - lv_start_time ) / 1.
+    WRITE: / lv_end_time, '|Tiempo consulta REVERSED (segundos)|', lv_duration.
+    GET TIME STAMP FIELD lv_start_time.
+*****************************              END   OF INSERT SF RSG 05.11.2024            *********************************
+
+  ENDMETHOD.
+ENDCLASS.
+
+*************    BEGIN OF INSERT SF RSG 04.11.2022    ***************************
+*&---------------------------------------------------------------------*
+*& Form HANDLE_SQL_EXCEPTION
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> SQLERR_REF
+*&      <-- GV_MESSAGE
+*&---------------------------------------------------------------------*
+FORM handle_sql_exception  USING    p_sqlerr_ref TYPE REF TO cx_sql_exception
+                           CHANGING p_gv_message TYPE string.
+
+  IF p_sqlerr_ref->db_error = 'X'.
+    p_gv_message = p_sqlerr_ref->sql_code && ' ' && p_sqlerr_ref->sql_message.
+  ELSE.
+    p_gv_message = p_sqlerr_ref->internal_error.
+    MESSAGE p_sqlerr_ref TYPE 'S' DISPLAY LIKE 'E'.
+  ENDIF.
+ENDFORM.
+*************    BEGIN OF INSERT SF RSG 04.11.2022    ***************************
