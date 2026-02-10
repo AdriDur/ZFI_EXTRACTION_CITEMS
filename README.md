@@ -37,8 +37,8 @@ Programa ABAP para la extracción de ítems contables de FI (Financial) con func
 
 El código de filtrado de BUKRS se encuentra en:
 - **Archivo**: `zfi_extraction_citems.abap`
-- **Formulario**: `PREPARE_BUKRS_FILTER` (líneas 105-169)
-- **Aplicación**: Línea 189 en la consulta SQL
+- **Formulario**: `PREPARE_BUKRS_FILTER` (líneas 130-192)
+- **Aplicación**: Línea 227 en la consulta SQL
 
 Ver [DOCUMENTACION_FILTRADO_BUKRS.md](DOCUMENTACION_FILTRADO_BUKRS.md) para detalles completos.
 
@@ -95,7 +95,7 @@ zfi_extraction_citems.abap
 Para cambiar las sociedades de depuración:
 
 1. Editar `zfi_extraction_citems.abap`
-2. Ir al formulario `PREPARE_BUKRS_FILTER` (líneas 124-129)
+2. Ir al formulario `PREPARE_BUKRS_FILTER` (líneas 143-149)
 3. Modificar los APPEND según necesidad:
 
 ```abap

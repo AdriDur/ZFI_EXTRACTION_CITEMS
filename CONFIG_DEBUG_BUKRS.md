@@ -15,7 +15,7 @@ Las siguientes sociedades (BUKRS) están configuradas en el modo depuración del
 
 Archivo: `zfi_extraction_citems.abap`
 Formulario: `PREPARE_BUKRS_FILTER`
-Líneas: 127-129
+Líneas: 143-149
 
 ## Instrucciones para Modificar el Set de Depuración
 
@@ -23,7 +23,7 @@ Para agregar o modificar sociedades de depuración:
 
 1. Abrir el archivo `zfi_extraction_citems.abap`
 2. Localizar el formulario `PREPARE_BUKRS_FILTER`
-3. En la sección del modo depuración (líneas 124-147)
+3. En la sección del modo depuración (líneas 138-166)
 4. Modificar las líneas APPEND:
 
 ```abap

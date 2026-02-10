@@ -8,8 +8,8 @@ El código de filtrado de BUKRS se encuentra en el archivo: **`zfi_extraction_ci
 
 1. **Líneas 20-29**: Definición del tipo `ty_bukrs_range` para rangos de sociedades
 2. **Líneas 40-42**: Declaración de tablas internas para el filtrado
-3. **Líneas 105-169**: Formulario `PREPARE_BUKRS_FILTER` (código principal de filtrado)
-4. **Líneas 189**: Aplicación del filtro en la consulta SQL
+3. **Líneas 130-192**: Formulario `PREPARE_BUKRS_FILTER` (código principal de filtrado)
+4. **Línea 227**: Aplicación del filtro en la consulta SQL
 
 ---
 
@@ -60,11 +60,11 @@ PARAMETERS: p_debug TYPE flag DEFAULT ' '.  " Checkbox para modo depuración
 
 ### 4. Formulario PREPARE_BUKRS_FILTER (Código Principal)
 
-Este es el **núcleo del filtrado de BUKRS**. Se encuentra en las líneas 105-169.
+Este es el **núcleo del filtrado de BUKRS**. Se encuentra en las líneas 130-192.
 
 #### 4.1 Modo Depuración (p_debug = 'X')
 
-**Ubicación**: Líneas 124-147
+**Ubicación**: Líneas 138-166
 
 ```abap
 IF p_debug = 'X'.
@@ -100,7 +100,7 @@ IF p_debug = 'X'.
 
 #### 4.2 Modo Normal (p_debug = ' ')
 
-**Ubicación**: Líneas 149-160
+**Ubicación**: Líneas 167-180
 
 ```abap
 ELSE.
@@ -131,7 +131,7 @@ ENDIF.
 
 ### 5. Aplicación del Filtro en la Consulta SQL
 
-**Ubicación**: Línea 189 del formulario `EXTRACT_FI_DATA`
+**Ubicación**: Línea 227 del formulario `EXTRACT_FI_DATA`
 
 ```abap
 SELECT b~bukrs
@@ -250,7 +250,7 @@ END
 Para agregar más sociedades de depuración:
 
 ```abap
-" En el formulario PREPARE_BUKRS_FILTER, líneas 127-129
+" En el formulario PREPARE_BUKRS_FILTER, líneas 143-149
 APPEND '1000' TO lt_bukrs_debug.
 APPEND '2000' TO lt_bukrs_debug.
 APPEND '3000' TO lt_bukrs_debug.
@@ -259,11 +259,11 @@ APPEND '5000' TO lt_bukrs_debug.  " <-- Nueva sociedad
 ```
 
 Para cambiar la lógica de filtrado:
-- Modificar el formulario `PREPARE_BUKRS_FILTER` (líneas 105-169)
+- Modificar el formulario `PREPARE_BUKRS_FILTER` (líneas 130-192)
 - Mantener la estructura de salida en `lt_bukrs_filter`
 
 ---
 
 ## Conclusión
 
-El código de filtrado de BUKRS está implementado de manera modular y extensible. La ubicación principal es el formulario `PREPARE_BUKRS_FILTER` (líneas 105-169), con aplicación en la línea 189. La lógica permite tanto depuración controlada como uso flexible en producción.
+El código de filtrado de BUKRS está implementado de manera modular y extensible. La ubicación principal es el formulario `PREPARE_BUKRS_FILTER` (líneas 130-192), con aplicación en la línea 227. La lógica permite tanto depuración controlada como uso flexible en producción.
